@@ -1,22 +1,27 @@
-
-/**
- * First we will load all of this project's JavaScript dependencies which
- * includes Vue and other libraries. It is a great starting point when
- * building robust, powerful web applications using Vue and Laravel.
- */
-
 require('./bootstrap');
 
 window.Vue = require('vue');
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+import vueRouter from 'vue-router';
+import App from './components/App';
+import router from './routes';
+import iView from 'iview';
+import 'iview/dist/styles/iview.css';
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.use(vueRouter);
+Vue.use(iView);
+
+// 请求拦截器
+axios.interceptors.request.use(function (config) {
+    // config.headers['Authorization'] = 'Bearer ' + JWT.getToken();
+    return config;
+}, function (error) {
+    return Promise.reject(error);
+});
+
+Vue.component('app', App);
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    router
 });
