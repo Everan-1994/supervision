@@ -73,6 +73,13 @@
 <script>
     export default {
         data() {
+            const valideRePassword = (rule, value, callback) => {
+                if (value !== this.userData.password) {
+                    callback(new Error('两次输入密码不一致！'));
+                } else {
+                    callback();
+                }
+            };
             return {
                 userData: {
                     department: '',
@@ -110,15 +117,6 @@
                         {required: true, message: '请再次输入密码！', trigger: 'blur'},
                         {validator: valideRePassword, trigger: 'blur'}
                     ],
-                }
-            };
-            const valideRePassword = (rule, value, callback) => {
-                console.log(value);
-                console.log(this.userData.password);
-                if (value !== this.userData.password) {
-                    callback(new Error('两次输入密码不一致！'));
-                } else {
-                    callback();
                 }
             };
         },

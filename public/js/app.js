@@ -50427,6 +50427,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     data: function data() {
         var _this = this;
 
+        var valideRePassword = function valideRePassword(rule, value, callback) {
+            if (value !== _this.userData.password) {
+                callback(new Error('两次输入密码不一致！'));
+            } else {
+                callback();
+            }
+        };
         return {
             userData: {
                 department: '',
@@ -50450,15 +50457,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 mail: [{ required: true, message: '请填写邮箱！', trigger: 'blur' }, { type: 'email', message: '邮箱格式不正确！', trigger: 'blur' }],
                 password: [{ required: true, message: '请填写密码！', trigger: 'blur' }, { min: 6, message: '密码不得少于6位！', trigger: 'blur' }, { max: 18, message: '密码不得超出18位！', trigger: 'blur' }],
                 confirmPassword: [{ required: true, message: '请再次输入密码！', trigger: 'blur' }, { validator: valideRePassword, trigger: 'blur' }]
-            }
-        };
-        var valideRePassword = function valideRePassword(rule, value, callback) {
-            console.log(value);
-            console.log(_this.userData.password);
-            if (value !== _this.userData.password) {
-                callback(new Error('两次输入密码不一致！'));
-            } else {
-                callback();
             }
         };
     },
