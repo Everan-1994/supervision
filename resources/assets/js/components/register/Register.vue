@@ -27,7 +27,11 @@
                 </FormItem>
                 <FormItem label="邮箱：" prop="mail">
                     <div style="display:inline-block;width:66%;">
-                        <Input  v-model="userData.mail" placeholder="Enter your e-mail"></Input>
+                        <AutoComplete  v-model="userData.mail"
+                                       :data="mailData"
+                                       @on-search="handleSearch"
+                                       placeholder="Enter your e-mail">
+                        </AutoComplete>
                     </div>
                     <div style="display:inline-block;position:relative;">
                         <Button @click="getIdentifyCode" :disabled="canGetIdentifyCode">{{ gettingIdentifyCodeBtnContent }}</Button>
@@ -90,6 +94,7 @@
                     sex: '1',
                     identify: '1'
                 },
+                mailData: [], // 自动补全数组
                 inputCodeVisible: false, // 显示填写验证码box
                 securityCode: '', // 验证码
                 gettingIdentifyCodeBtnContent: '获取验证码', // “获取验证码”按钮的文字
@@ -106,7 +111,7 @@
                     ],
                     mail: [
                         {required: true, message: '请填写邮箱！', trigger: 'blur'},
-                        {type: 'email', message: '邮箱格式不正确！', trigger: 'blur'}
+                        {type: 'email', message: '邮箱格式不正确！', trigger: 'change'}
                     ],
                     password: [
                         {required: true, message: '请填写密码！', trigger: 'blur'},
@@ -121,6 +126,15 @@
             };
         },
         methods: {
+            handleSearch (value) {
+                this.mailData = !value ? [] : [
+                    value + '@qq.com',
+                    value + '@163.com',
+                    value + '@126.com',
+                    value + '@sina.com',
+                    value + '@aliyun.com'
+                ];
+            },
             handleSubmit(name) {
                 this.$refs[name].validate((valid) => {
                     if (valid || this.isValid) {
@@ -135,6 +149,7 @@
             },
             getIdentifyCode () {
                 this.hasGetIdentifyCode = true;
+
                 this.$refs['userData'].validate((valid) => {
                     if (valid) {
                         this.canGetIdentifyCode = true;
@@ -151,11 +166,18 @@
                         }, 1000);
                         this.inputCodeVisible = true;
                         // you can write ajax request here
+                        let email = this.userData.mail;
+                        axios.post('/api/verificationCodes', { 'email': email }).then(response => {
+                            console.log(response);
+                        });
                     }
                 });
             },
             cancelInputCodeBox () {
                 this.inputCodeVisible = false;
+            },
+            getCode (email) {
+
             },
             submitCode () {
                 let vm = this;

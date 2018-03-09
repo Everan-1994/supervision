@@ -50422,6 +50422,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -50444,6 +50448,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 sex: '1',
                 identify: '1'
             },
+            mailData: [], // 自动补全数组
             inputCodeVisible: false, // 显示填写验证码box
             securityCode: '', // 验证码
             gettingIdentifyCodeBtnContent: '获取验证码', // “获取验证码”按钮的文字
@@ -50454,7 +50459,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             ruleValidate: {
                 department: [{ required: true, message: '请选择系部！', trigger: 'change' }],
                 truename: [{ required: true, message: '请写填姓名！', trigger: 'blur' }],
-                mail: [{ required: true, message: '请填写邮箱！', trigger: 'blur' }, { type: 'email', message: '邮箱格式不正确！', trigger: 'blur' }],
+                mail: [{ required: true, message: '请填写邮箱！', trigger: 'blur' }, { type: 'email', message: '邮箱格式不正确！', trigger: 'change' }],
                 password: [{ required: true, message: '请填写密码！', trigger: 'blur' }, { min: 6, message: '密码不得少于6位！', trigger: 'blur' }, { max: 18, message: '密码不得超出18位！', trigger: 'blur' }],
                 confirmPassword: [{ required: true, message: '请再次输入密码！', trigger: 'blur' }, { validator: valideRePassword, trigger: 'blur' }]
             }
@@ -50462,6 +50467,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
 
     methods: {
+        handleSearch: function handleSearch(value) {
+            this.mailData = !value ? [] : [value + '@qq.com', value + '@163.com', value + '@126.com', value + '@sina.com', value + '@aliyun.com'];
+        },
         handleSubmit: function handleSubmit(name) {
             var _this2 = this;
 
@@ -50480,6 +50488,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var _this3 = this;
 
             this.hasGetIdentifyCode = true;
+
             this.$refs['userData'].validate(function (valid) {
                 if (valid) {
                     _this3.canGetIdentifyCode = true;
@@ -50496,12 +50505,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     }, 1000);
                     _this3.inputCodeVisible = true;
                     // you can write ajax request here
+                    var email = _this3.userData.mail;
+                    axios.post('/api/verificationCodes', { 'email': email }).then(function (response) {
+                        console.log(response);
+                    });
                 }
             });
         },
         cancelInputCodeBox: function cancelInputCodeBox() {
             this.inputCodeVisible = false;
         },
+        getCode: function getCode(email) {},
         submitCode: function submitCode() {
             var _this4 = this;
 
@@ -50671,8 +50685,12 @@ var render = function() {
                         staticStyle: { display: "inline-block", width: "66%" }
                       },
                       [
-                        _c("Input", {
-                          attrs: { placeholder: "Enter your e-mail" },
+                        _c("AutoComplete", {
+                          attrs: {
+                            data: _vm.mailData,
+                            placeholder: "Enter your e-mail"
+                          },
+                          on: { "on-search": _vm.handleSearch },
                           model: {
                             value: _vm.userData.mail,
                             callback: function($$v) {
