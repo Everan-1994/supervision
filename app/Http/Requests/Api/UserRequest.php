@@ -41,9 +41,9 @@ class UserRequest extends Request
             'name.required'     => '姓名不能为空',
             'name.between'      => '姓名必须介于 2 - 4 个字符之间。',
             'email.required'    => '邮箱不能为空',
-            'password.required' => '密码不能为空',
             'email.email'       => '邮箱格式不正确',
             'email.unique'      => '邮箱已被占用',
+            'password.required' => '密码不能为空',
             'sex.required'      => '性别不能为空',
             'identify.required' => '注册身份不能为空'
         ];

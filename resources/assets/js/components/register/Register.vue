@@ -37,7 +37,7 @@
                 </FormItem>
                 <FormItem label="验证码：" prop="verifyCode">
                     <div style="display:inline-block;width:66%;">
-                        <Input v-model="verifyCode" placeholder="Enter veriyf code"></Input>
+                        <Input v-model="formData.verifyCode" placeholder="Enter veriyf code"></Input>
                     </div>
                     <div style="display:inline-block;position:relative;">
                         <Button @click="getIdentifyCode" :disabled="canGetIdentifyCode">{{ gettingIdentifyCodeBtnContent
@@ -47,14 +47,26 @@
                 </FormItem>
                 <FormItem label="性别：">
                     <RadioGroup v-model="formData.sex">
-                        <Radio label="1">男</Radio>
-                        <Radio label="2">女</Radio>
+                        <Radio label="1">
+                            <Icon type="man"></Icon>
+                            <span>男</span>
+                        </Radio>
+                        <Radio label="2">
+                            <Icon type="woman"></Icon>
+                            <span>女</span>
+                        </Radio>
                     </RadioGroup>
                 </FormItem>
                 <FormItem label="注册身份：">
                     <RadioGroup v-model="formData.identify">
-                        <Radio label="1">校内</Radio>
-                        <Radio label="2">校外</Radio>
+                        <Radio label="1">
+                            <Icon type="ios-home"></Icon>
+                            <span>校内</span>
+                        </Radio>
+                        <Radio label="2">
+                            <Icon type="ios-home-outline"></Icon>
+                            <span>校外</span>
+                        </Radio>
                     </RadioGroup>
                 </FormItem>
                 <div class="ivu-form-item-content" style="text-align: center;">
@@ -83,9 +95,9 @@
                     callback();
                 }
             };
-            const valideEmail = (rule, value, callback) => {
-                if (!this.formData.mail) {
-                    callback(new Error('请先填写邮箱！'));
+            const hasGetCode = (rule, value, callback) => {
+                if (!this.hasGetIdentifyCode) {
+                    callback(new Error('请先获取验证码！'));
                 } else {
                     callback();
                 }
@@ -98,7 +110,8 @@
                     password: '',
                     confirmPassword: '',
                     sex: '1',
-                    identify: '1'
+                    identify: '1',
+                    verifyCode: '', // 验证码
                 },
                 key: '',
                 mailData: [], // 自动补全数组
@@ -110,27 +123,27 @@
                 isValid: false,
                 ruleValidate: {
                     department: [
-                        {required: true, message: '请选择系部！', trigger: 'change'}
+                        {required: true, message: '请选择系部', trigger: 'change'}
                     ],
                     truename: [
-                        {required: true, message: '请写填姓名！', trigger: 'blur'}
+                        {required: true, message: '请写填姓名', trigger: 'blur'}
                     ],
                     mail: [
-                        {required: true, message: '请填写邮箱！', trigger: 'blur'},
-                        {type: 'email', message: '邮箱格式不正确！', trigger: 'change'}
+                        {required: true, message: '请填写邮箱', trigger: 'blur'},
+                        {type: 'email', message: '邮箱格式不正确', trigger: 'change'}
                     ],
                     password: [
-                        {required: true, message: '请填写密码！', trigger: 'blur'},
-                        {min: 6, message: '密码不得少于6位！', trigger: 'blur'},
-                        {max: 18, message: '密码不得超出18位！', trigger: 'blur'}
+                        {required: true, message: '请填写密码', trigger: 'blur'},
+                        {min: 6, message: '密码不得少于6位', trigger: 'blur'},
+                        {max: 18, message: '密码不得超出18位', trigger: 'blur'}
                     ],
                     confirmPassword: [
-                        {required: true, message: '请再次输入密码！', trigger: 'blur'},
+                        {required: true, message: '请再次输入密码', trigger: 'blur'},
                         {validator: valideRePassword, trigger: 'blur'}
                     ],
                     verifyCode: [
-                        // {required: true, message: '请输入验证码！', trigger: 'blur'},
-                        {validator: valideEmail, trigger: 'blur'}
+                        {required: true, message: '请输入验证码', trigger: 'blur'},
+                        {validator: hasGetCode, trigger: 'blur'}
                     ],
                 }
             };
@@ -157,7 +170,7 @@
                             sex: _this.formData.sex,
                             identify: _this.formData.identify,
                             verification_key: _this.key,
-                            verification_code: _this.verifyCode
+                            verification_code: _this.formData.verifyCode
                         };
                         axios.post('/api/users', formData).then(response => {
                             if (response.status == 201) {
@@ -169,7 +182,6 @@
                                 this.$Message.error('注册失败，请稍候重试。');
                             }
                         });
-
                     }
                 })
             },
@@ -180,41 +192,36 @@
                 let _this = this;
                 _this.hasGetIdentifyCode = true;
 
-                _this.$refs['formData'].validate((valid) => {
-                    if (valid && !_this.formData.verifyCode) {
-                        _this.canGetIdentifyCode = true;
-                        let timeLast = 60;
-                        let timer = setInterval(() => {
-                            if (timeLast >= 0) {
-                                _this.gettingIdentifyCodeBtnContent = timeLast + '秒后重试';
-                                timeLast -= 1;
-                            } else {
-                                clearInterval(timer);
-                                _this.gettingIdentifyCodeBtnContent = '获取验证码';
-                                _this.canGetIdentifyCode = false;
-                            }
-                        }, 1000);
-                        _this.inputCodeVisible = true;
-                        // you can write ajax request here
-                        let email = _this.formData.mail;
-                        axios.post('/api/verificationCodes', {'email': email}).then(response => {
-                            if (response.status == 201) {
-                                _this.key = response.data.key;
-                            } else {
-                                _this.$Message.error('获取验证码异常，请重试。');
-                            }
-                        });
-                    }
-                });
-            },
-            submitCode() {
-                if (this.formData.verifyCode.length === 0) {
-                    this.$Message.error('请填写验证码');
-                } else {
-                    setTimeout(() => {
-                        this.$Message.success('验证码正确');
-                        this.inputCodeVisible = false;
+                let regEmail = /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/;
+
+                if (_this.formData.mail && regEmail.test(_this.formData.mail)) {
+                    _this.canGetIdentifyCode = true;
+                    let timeLast = 60;
+                    let timer = setInterval(() => {
+                        if (timeLast >= 0) {
+                            _this.gettingIdentifyCodeBtnContent = timeLast + '秒后重试';
+                            timeLast -= 1;
+                        } else {
+                            clearInterval(timer);
+                            _this.gettingIdentifyCodeBtnContent = '获取验证码';
+                            _this.canGetIdentifyCode = false;
+                        }
                     }, 1000);
+                    _this.inputCodeVisible = true;
+                    // you can write ajax request here
+                    let email = _this.formData.mail;
+                    axios.post('/api/verificationCodes', {'email': email}).then(response => {
+                        if (response.status == 201) {
+                            _this.$Message.success('验证码已发送，注意查收。');
+                            _this.key = response.data.key;
+                        } else if (response.status == 429) {
+                            _this.$Message.error('发送邮件过于频繁，请一分钟后再试。');
+                        } else {
+                            _this.$Message.error('获取验证码异常，请重试。');
+                        }
+                    });
+                } else {
+                    _this.$refs['formData'].validateField('mail');
                 }
             },
         }
