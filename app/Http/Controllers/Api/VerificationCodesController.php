@@ -18,8 +18,12 @@ class VerificationCodesController extends Controller implements ShouldQueue
         // 生成6位随机数，左侧补0
         $code = str_pad(random_int(1, 999999), 6, 0, STR_PAD_LEFT);
 
-        // 发送验证码
-        SendEmail::dispatch($code, $email);
+        if (!app()->environment('production')) {
+            $code = '123456';
+        } else {
+            // 发送验证码
+            SendEmail::dispatch($code, $email);
+        }
 //        try {
 //            Mail::send('emails.send_code', ['code' => $code], function ($message) use ($email) {
 //                $message->to($email)->subject('督导处 - 广西机电职业技术学院');
@@ -31,7 +35,7 @@ class VerificationCodesController extends Controller implements ShouldQueue
 //        }
 
         $key = 'verification_' . str_random(15);
-        $expiredAt = now()->addMinutes(1); // 有效期1分钟
+        $expiredAt = now()->addMinutes(3); // 有效期3分钟
         cache()->put($key, ['email' => $email, 'code' => $code], $expiredAt);
 
         return $this->response->array([

@@ -50425,21 +50425,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
-        var _this = this;
+        var _this2 = this;
 
         var valideRePassword = function valideRePassword(rule, value, callback) {
-            if (value !== _this.userData.password) {
+            if (value !== _this2.formData.password) {
                 callback(new Error('两次输入密码不一致！'));
             } else {
                 callback();
             }
         };
+        var valideEmail = function valideEmail(rule, value, callback) {
+            if (!_this2.formData.mail) {
+                callback(new Error('请先填写邮箱！'));
+            } else {
+                callback();
+            }
+        };
         return {
-            userData: {
+            formData: {
                 department: '',
                 truename: '',
                 mail: '',
@@ -50448,20 +50454,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 sex: '1',
                 identify: '1'
             },
+            key: '',
             mailData: [], // 自动补全数组
+            verifyCode: '', // 验证码
             inputCodeVisible: false, // 显示填写验证码box
-            securityCode: '', // 验证码
             gettingIdentifyCodeBtnContent: '获取验证码', // “获取验证码”按钮的文字
             hasGetIdentifyCode: false, // 是否点了获取验证码
             canGetIdentifyCode: false, // 是否可点获取验证码
-            checkIdentifyCodeLoading: false,
             isValid: false,
             ruleValidate: {
                 department: [{ required: true, message: '请选择系部！', trigger: 'change' }],
                 truename: [{ required: true, message: '请写填姓名！', trigger: 'blur' }],
                 mail: [{ required: true, message: '请填写邮箱！', trigger: 'blur' }, { type: 'email', message: '邮箱格式不正确！', trigger: 'change' }],
                 password: [{ required: true, message: '请填写密码！', trigger: 'blur' }, { min: 6, message: '密码不得少于6位！', trigger: 'blur' }, { max: 18, message: '密码不得超出18位！', trigger: 'blur' }],
-                confirmPassword: [{ required: true, message: '请再次输入密码！', trigger: 'blur' }, { validator: valideRePassword, trigger: 'blur' }]
+                confirmPassword: [{ required: true, message: '请再次输入密码！', trigger: 'blur' }, { validator: valideRePassword, trigger: 'blur' }],
+                verifyCode: [
+                // {required: true, message: '请输入验证码！', trigger: 'blur'},
+                { validator: valideEmail, trigger: 'blur' }]
             }
         };
     },
@@ -50471,13 +50480,31 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.mailData = !value ? [] : [value + '@qq.com', value + '@163.com', value + '@126.com', value + '@sina.com', value + '@aliyun.com'];
         },
         handleSubmit: function handleSubmit(name) {
-            var _this2 = this;
+            var _this3 = this;
 
+            var _this = this;
             this.$refs[name].validate(function (valid) {
-                if (valid || _this2.isValid) {
-                    _this2.$Message.success('Success!');
-                } else {
-                    _this2.$Message.error('Fail!');
+                if (valid) {
+                    var formData = {
+                        department_id: _this.formData.department,
+                        name: _this.formData.truename,
+                        email: _this.formData.mail,
+                        password: _this.formData.password,
+                        sex: _this.formData.sex,
+                        identify: _this.formData.identify,
+                        verification_key: _this.key,
+                        verification_code: _this.verifyCode
+                    };
+                    axios.post('/api/users', formData).then(function (response) {
+                        if (response.status == 201) {
+                            _this3.$Message.success('注册成功！');
+                            setTimeout(function () {
+                                _this.$router.push({ 'name': 'login' });
+                            }, 1500);
+                        } else {
+                            _this3.$Message.error('注册失败，请稍候重试。');
+                        }
+                    });
                 }
             });
         },
@@ -50485,51 +50512,45 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.$refs[name].resetFields();
         },
         getIdentifyCode: function getIdentifyCode() {
-            var _this3 = this;
+            var _this = this;
+            _this.hasGetIdentifyCode = true;
 
-            this.hasGetIdentifyCode = true;
-
-            this.$refs['userData'].validate(function (valid) {
-                if (valid) {
-                    _this3.canGetIdentifyCode = true;
+            _this.$refs['formData'].validate(function (valid) {
+                if (valid && !_this.formData.verifyCode) {
+                    _this.canGetIdentifyCode = true;
                     var timeLast = 60;
                     var timer = setInterval(function () {
                         if (timeLast >= 0) {
-                            _this3.gettingIdentifyCodeBtnContent = timeLast + '秒后重试';
+                            _this.gettingIdentifyCodeBtnContent = timeLast + '秒后重试';
                             timeLast -= 1;
                         } else {
                             clearInterval(timer);
-                            _this3.gettingIdentifyCodeBtnContent = '获取验证码';
-                            _this3.canGetIdentifyCode = false;
+                            _this.gettingIdentifyCodeBtnContent = '获取验证码';
+                            _this.canGetIdentifyCode = false;
                         }
                     }, 1000);
-                    _this3.inputCodeVisible = true;
+                    _this.inputCodeVisible = true;
                     // you can write ajax request here
-                    var email = _this3.userData.mail;
+                    var email = _this.formData.mail;
                     axios.post('/api/verificationCodes', { 'email': email }).then(function (response) {
-                        console.log(response);
+                        if (response.status == 201) {
+                            _this.key = response.data.key;
+                        } else {
+                            _this.$Message.error('获取验证码异常，请重试。');
+                        }
                     });
                 }
             });
         },
-        cancelInputCodeBox: function cancelInputCodeBox() {
-            this.inputCodeVisible = false;
-        },
-        getCode: function getCode(email) {},
         submitCode: function submitCode() {
             var _this4 = this;
 
-            var vm = this;
-            vm.checkIdentifyCodeLoading = true;
-            if (this.securityCode.length === 0) {
+            if (this.formData.verifyCode.length === 0) {
                 this.$Message.error('请填写验证码');
             } else {
-                // 已验证
-                vm.isValid = true;
                 setTimeout(function () {
                     _this4.$Message.success('验证码正确');
                     _this4.inputCodeVisible = false;
-                    _this4.checkIdentifyCodeLoading = false;
                 }, 1000);
             }
         }
@@ -50546,7 +50567,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "Row",
-    { style: { "margin-top": "70px" } },
+    { style: { "margin-top": "57px" } },
     [
       _c(
         "Col",
@@ -50564,7 +50585,7 @@ var render = function() {
                 },
                 [
                   _c("Icon", { attrs: { type: "social-octocat" } }),
-                  _vm._v(" 用户注册\n        ")
+                  _vm._v("\n            用户注册\n        ")
                 ],
                 1
               ),
@@ -50572,9 +50593,9 @@ var render = function() {
               _c(
                 "Form",
                 {
-                  ref: "userData",
+                  ref: "formData",
                   attrs: {
-                    model: _vm.userData,
+                    model: _vm.formData,
                     rules: _vm.ruleValidate,
                     "label-width": 83
                   }
@@ -50589,23 +50610,23 @@ var render = function() {
                         {
                           staticStyle: { width: "94%" },
                           model: {
-                            value: _vm.userData.department,
+                            value: _vm.formData.department,
                             callback: function($$v) {
-                              _vm.$set(_vm.userData, "department", $$v)
+                              _vm.$set(_vm.formData, "department", $$v)
                             },
-                            expression: "userData.department"
+                            expression: "formData.department"
                           }
                         },
                         [
-                          _c("Option", { attrs: { value: "0" } }, [
+                          _c("Option", { attrs: { value: "1" } }, [
                             _vm._v("计算机系")
                           ]),
                           _vm._v(" "),
-                          _c("Option", { attrs: { value: "1" } }, [
+                          _c("Option", { attrs: { value: "2" } }, [
                             _vm._v("工商系")
                           ]),
                           _vm._v(" "),
-                          _c("Option", { attrs: { value: "2" } }, [
+                          _c("Option", { attrs: { value: "3" } }, [
                             _vm._v("汽车系")
                           ])
                         ],
@@ -50623,11 +50644,35 @@ var render = function() {
                         staticStyle: { width: "94%" },
                         attrs: { placeholder: "Enter your truename" },
                         model: {
-                          value: _vm.userData.truename,
+                          value: _vm.formData.truename,
                           callback: function($$v) {
-                            _vm.$set(_vm.userData, "truename", $$v)
+                            _vm.$set(_vm.formData, "truename", $$v)
                           },
-                          expression: "userData.truename"
+                          expression: "formData.truename"
+                        }
+                      })
+                    ],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "FormItem",
+                    { attrs: { label: "邮箱：", prop: "mail" } },
+                    [
+                      _c("AutoComplete", {
+                        ref: "mail",
+                        staticStyle: { width: "94%" },
+                        attrs: {
+                          data: _vm.mailData,
+                          placeholder: "Enter your e-mail"
+                        },
+                        on: { "on-search": _vm.handleSearch },
+                        model: {
+                          value: _vm.formData.mail,
+                          callback: function($$v) {
+                            _vm.$set(_vm.formData, "mail", $$v)
+                          },
+                          expression: "formData.mail"
                         }
                       })
                     ],
@@ -50645,11 +50690,11 @@ var render = function() {
                           placeholder: "Enter your password"
                         },
                         model: {
-                          value: _vm.userData.password,
+                          value: _vm.formData.password,
                           callback: function($$v) {
-                            _vm.$set(_vm.userData, "password", $$v)
+                            _vm.$set(_vm.formData, "password", $$v)
                           },
-                          expression: "userData.password"
+                          expression: "formData.password"
                         }
                       })
                     ],
@@ -50667,133 +50712,68 @@ var render = function() {
                           placeholder: "Enter confirm password"
                         },
                         model: {
-                          value: _vm.userData.confirmPassword,
+                          value: _vm.formData.confirmPassword,
                           callback: function($$v) {
-                            _vm.$set(_vm.userData, "confirmPassword", $$v)
+                            _vm.$set(_vm.formData, "confirmPassword", $$v)
                           },
-                          expression: "userData.confirmPassword"
+                          expression: "formData.confirmPassword"
                         }
                       })
                     ],
                     1
                   ),
                   _vm._v(" "),
-                  _c("FormItem", { attrs: { label: "邮箱：", prop: "mail" } }, [
-                    _c(
-                      "div",
-                      {
-                        staticStyle: { display: "inline-block", width: "66%" }
-                      },
-                      [
-                        _c("AutoComplete", {
-                          attrs: {
-                            data: _vm.mailData,
-                            placeholder: "Enter your e-mail"
-                          },
-                          on: { "on-search": _vm.handleSearch },
-                          model: {
-                            value: _vm.userData.mail,
-                            callback: function($$v) {
-                              _vm.$set(_vm.userData, "mail", $$v)
-                            },
-                            expression: "userData.mail"
-                          }
-                        })
-                      ],
-                      1
-                    ),
-                    _vm._v(" "),
-                    _c(
-                      "div",
-                      {
-                        staticStyle: {
-                          display: "inline-block",
-                          position: "relative"
-                        }
-                      },
-                      [
-                        _c(
-                          "Button",
-                          {
-                            attrs: { disabled: _vm.canGetIdentifyCode },
-                            on: { click: _vm.getIdentifyCode }
-                          },
-                          [_vm._v(_vm._s(_vm.gettingIdentifyCodeBtnContent))]
-                        ),
-                        _vm._v(" "),
-                        _vm.inputCodeVisible
-                          ? _c(
-                              "div",
-                              {
-                                staticClass: "own-space-input-identifycode-con"
+                  _c(
+                    "FormItem",
+                    { attrs: { label: "验证码：", prop: "verifyCode" } },
+                    [
+                      _c(
+                        "div",
+                        {
+                          staticStyle: { display: "inline-block", width: "66%" }
+                        },
+                        [
+                          _c("Input", {
+                            attrs: { placeholder: "Enter veriyf code" },
+                            model: {
+                              value: _vm.verifyCode,
+                              callback: function($$v) {
+                                _vm.verifyCode = $$v
                               },
-                              [
-                                _c(
-                                  "div",
-                                  {
-                                    staticStyle: {
-                                      "background-color": "white",
-                                      "z-index": "110",
-                                      margin: "10px"
-                                    }
-                                  },
-                                  [
-                                    _c("Input", {
-                                      attrs: { placeholder: "请填写验证码" },
-                                      model: {
-                                        value: _vm.securityCode,
-                                        callback: function($$v) {
-                                          _vm.securityCode = $$v
-                                        },
-                                        expression: "securityCode"
-                                      }
-                                    }),
-                                    _vm._v(" "),
-                                    _c(
-                                      "div",
-                                      {
-                                        staticStyle: {
-                                          "margin-top": "10px",
-                                          "text-align": "right"
-                                        }
-                                      },
-                                      [
-                                        _c(
-                                          "Button",
-                                          {
-                                            attrs: { type: "ghost" },
-                                            on: {
-                                              click: _vm.cancelInputCodeBox
-                                            }
-                                          },
-                                          [_vm._v("取消")]
-                                        ),
-                                        _vm._v(" "),
-                                        _c(
-                                          "Button",
-                                          {
-                                            attrs: {
-                                              type: "primary",
-                                              loading:
-                                                _vm.checkIdentifyCodeLoading
-                                            },
-                                            on: { click: _vm.submitCode }
-                                          },
-                                          [_vm._v("确定")]
-                                        )
-                                      ],
-                                      1
-                                    )
-                                  ],
-                                  1
-                                )
-                              ]
-                            )
-                          : _vm._e()
-                      ],
-                      1
-                    )
-                  ]),
+                              expression: "verifyCode"
+                            }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        {
+                          staticStyle: {
+                            display: "inline-block",
+                            position: "relative"
+                          }
+                        },
+                        [
+                          _c(
+                            "Button",
+                            {
+                              attrs: { disabled: _vm.canGetIdentifyCode },
+                              on: { click: _vm.getIdentifyCode }
+                            },
+                            [
+                              _vm._v(
+                                _vm._s(_vm.gettingIdentifyCodeBtnContent) +
+                                  "\n                    "
+                              )
+                            ]
+                          )
+                        ],
+                        1
+                      )
+                    ]
+                  ),
                   _vm._v(" "),
                   _c(
                     "FormItem",
@@ -50803,11 +50783,11 @@ var render = function() {
                         "RadioGroup",
                         {
                           model: {
-                            value: _vm.userData.sex,
+                            value: _vm.formData.sex,
                             callback: function($$v) {
-                              _vm.$set(_vm.userData, "sex", $$v)
+                              _vm.$set(_vm.formData, "sex", $$v)
                             },
-                            expression: "userData.sex"
+                            expression: "formData.sex"
                           }
                         },
                         [
@@ -50831,11 +50811,11 @@ var render = function() {
                         "RadioGroup",
                         {
                           model: {
-                            value: _vm.userData.identify,
+                            value: _vm.formData.identify,
                             callback: function($$v) {
-                              _vm.$set(_vm.userData, "identify", $$v)
+                              _vm.$set(_vm.formData, "identify", $$v)
                             },
-                            expression: "userData.identify"
+                            expression: "formData.identify"
                           }
                         },
                         [
@@ -50867,7 +50847,7 @@ var render = function() {
                           attrs: { type: "primary" },
                           on: {
                             click: function($event) {
-                              _vm.handleSubmit("userData")
+                              _vm.handleSubmit("formData")
                             }
                           }
                         },
@@ -50885,7 +50865,7 @@ var render = function() {
                           attrs: { type: "ghost" },
                           on: {
                             click: function($event) {
-                              _vm.handleReset("userData")
+                              _vm.handleReset("formData")
                             }
                           }
                         },

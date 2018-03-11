@@ -1,69 +1,68 @@
 <template>
-    <Row :style="{ 'margin-top': '70px' }">
+    <Row :style="{ 'margin-top': '57px' }">
         <Col span="8" offset="8">
         <Card>
             <p slot="title" style="text-align: center;">
-                <Icon type="social-octocat"></Icon> 用户注册
+                <Icon type="social-octocat"></Icon>
+                用户注册
             </p>
-            <Form ref="userData" :model="userData" :rules="ruleValidate" :label-width="83">
+            <Form ref="formData" :model="formData" :rules="ruleValidate" :label-width="83">
                 <FormItem label="系部：" prop="department">
-                    <Select v-model="userData.department" style="width: 94%;">
-                        <Option value="0">计算机系</Option>
-                        <Option value="1">工商系</Option>
-                        <Option value="2">汽车系</Option>
+                    <Select v-model="formData.department" style="width: 94%;">
+                        <Option value="1">计算机系</Option>
+                        <Option value="2">工商系</Option>
+                        <Option value="3">汽车系</Option>
                     </Select>
                 </FormItem>
                 <FormItem label="姓名：" prop="truename">
-                    <Input style="width: 94%;" v-model="userData.truename"
+                    <Input style="width: 94%;" v-model="formData.truename"
                            placeholder="Enter your truename"></Input>
                 </FormItem>
+                <FormItem label="邮箱：" prop="mail">
+                    <AutoComplete v-model="formData.mail"
+                                  :data="mailData"
+                                  @on-search="handleSearch"
+                                  style="width: 94%;"
+                                  ref="mail"
+                                  placeholder="Enter your e-mail">
+                    </AutoComplete>
+                </FormItem>
                 <FormItem label="密码：" prop="password">
-                    <Input style="width: 94%;" v-model="userData.password" type="password"
+                    <Input style="width: 94%;" v-model="formData.password" type="password"
                            placeholder="Enter your password"></Input>
                 </FormItem>
                 <FormItem label="确认密码：" prop="confirmPassword">
-                    <Input style="width: 94%;" v-model="userData.confirmPassword" type="password"
+                    <Input style="width: 94%;" v-model="formData.confirmPassword" type="password"
                            placeholder="Enter confirm password"></Input>
                 </FormItem>
-                <FormItem label="邮箱：" prop="mail">
+                <FormItem label="验证码：" prop="verifyCode">
                     <div style="display:inline-block;width:66%;">
-                        <AutoComplete  v-model="userData.mail"
-                                       :data="mailData"
-                                       @on-search="handleSearch"
-                                       placeholder="Enter your e-mail">
-                        </AutoComplete>
+                        <Input v-model="verifyCode" placeholder="Enter veriyf code"></Input>
                     </div>
                     <div style="display:inline-block;position:relative;">
-                        <Button @click="getIdentifyCode" :disabled="canGetIdentifyCode">{{ gettingIdentifyCodeBtnContent }}</Button>
-                        <div class="own-space-input-identifycode-con" v-if="inputCodeVisible">
-                            <div style="background-color:white;z-index:110;margin:10px;">
-                                <Input v-model="securityCode" placeholder="请填写验证码" ></Input>
-                                <div style="margin-top:10px;text-align:right">
-                                    <Button type="ghost" @click="cancelInputCodeBox">取消</Button>
-                                    <Button type="primary" @click="submitCode" :loading="checkIdentifyCodeLoading">确定</Button>
-                                </div>
-                            </div>
-                        </div>
+                        <Button @click="getIdentifyCode" :disabled="canGetIdentifyCode">{{ gettingIdentifyCodeBtnContent
+                            }}
+                        </Button>
                     </div>
                 </FormItem>
                 <FormItem label="性别：">
-                    <RadioGroup v-model="userData.sex">
+                    <RadioGroup v-model="formData.sex">
                         <Radio label="1">男</Radio>
                         <Radio label="2">女</Radio>
                     </RadioGroup>
                 </FormItem>
                 <FormItem label="注册身份：">
-                    <RadioGroup v-model="userData.identify">
+                    <RadioGroup v-model="formData.identify">
                         <Radio label="1">校内</Radio>
                         <Radio label="2">校外</Radio>
                     </RadioGroup>
                 </FormItem>
                 <div class="ivu-form-item-content" style="text-align: center;">
-                    <Button type="primary" @click="handleSubmit('userData')" style="margin-left: 8px">
+                    <Button type="primary" @click="handleSubmit('formData')" style="margin-left: 8px">
                         <Icon type="android-done"></Icon>
                         注册
                     </Button>
-                    <Button type="ghost" @click="handleReset('userData')" style="margin-left: 8px">
+                    <Button type="ghost" @click="handleReset('formData')" style="margin-left: 8px">
                         <Icon type="refresh"></Icon>
                         重置
                     </Button>
@@ -78,14 +77,21 @@
     export default {
         data() {
             const valideRePassword = (rule, value, callback) => {
-                if (value !== this.userData.password) {
+                if (value !== this.formData.password) {
                     callback(new Error('两次输入密码不一致！'));
                 } else {
                     callback();
                 }
             };
+            const valideEmail = (rule, value, callback) => {
+                if (!this.formData.mail) {
+                    callback(new Error('请先填写邮箱！'));
+                } else {
+                    callback();
+                }
+            };
             return {
-                userData: {
+                formData: {
                     department: '',
                     truename: '',
                     mail: '',
@@ -94,13 +100,13 @@
                     sex: '1',
                     identify: '1'
                 },
+                key: '',
                 mailData: [], // 自动补全数组
+                verifyCode: '', // 验证码
                 inputCodeVisible: false, // 显示填写验证码box
-                securityCode: '', // 验证码
                 gettingIdentifyCodeBtnContent: '获取验证码', // “获取验证码”按钮的文字
                 hasGetIdentifyCode: false, // 是否点了获取验证码
                 canGetIdentifyCode: false, // 是否可点获取验证码
-                checkIdentifyCodeLoading: false,
                 isValid: false,
                 ruleValidate: {
                     department: [
@@ -122,11 +128,15 @@
                         {required: true, message: '请再次输入密码！', trigger: 'blur'},
                         {validator: valideRePassword, trigger: 'blur'}
                     ],
+                    verifyCode: [
+                        // {required: true, message: '请输入验证码！', trigger: 'blur'},
+                        {validator: valideEmail, trigger: 'blur'}
+                    ],
                 }
             };
         },
         methods: {
-            handleSearch (value) {
+            handleSearch(value) {
                 this.mailData = !value ? [] : [
                     value + '@qq.com',
                     value + '@163.com',
@@ -136,61 +146,74 @@
                 ];
             },
             handleSubmit(name) {
+                let _this = this;
                 this.$refs[name].validate((valid) => {
-                    if (valid || this.isValid) {
-                        this.$Message.success('Success!');
-                    } else {
-                        this.$Message.error('Fail!');
+                    if (valid) {
+                        let formData = {
+                            department_id: _this.formData.department,
+                            name: _this.formData.truename,
+                            email: _this.formData.mail,
+                            password: _this.formData.password,
+                            sex: _this.formData.sex,
+                            identify: _this.formData.identify,
+                            verification_key: _this.key,
+                            verification_code: _this.verifyCode
+                        };
+                        axios.post('/api/users', formData).then(response => {
+                            if (response.status == 201) {
+                                this.$Message.success('注册成功！');
+                                setTimeout(() => {
+                                    _this.$router.push({'name': 'login'});
+                                }, 1500);
+                            } else {
+                                this.$Message.error('注册失败，请稍候重试。');
+                            }
+                        });
+
                     }
                 })
             },
             handleReset(name) {
                 this.$refs[name].resetFields();
             },
-            getIdentifyCode () {
-                this.hasGetIdentifyCode = true;
+            getIdentifyCode() {
+                let _this = this;
+                _this.hasGetIdentifyCode = true;
 
-                this.$refs['userData'].validate((valid) => {
-                    if (valid) {
-                        this.canGetIdentifyCode = true;
+                _this.$refs['formData'].validate((valid) => {
+                    if (valid && !_this.formData.verifyCode) {
+                        _this.canGetIdentifyCode = true;
                         let timeLast = 60;
                         let timer = setInterval(() => {
                             if (timeLast >= 0) {
-                                this.gettingIdentifyCodeBtnContent = timeLast + '秒后重试';
+                                _this.gettingIdentifyCodeBtnContent = timeLast + '秒后重试';
                                 timeLast -= 1;
                             } else {
                                 clearInterval(timer);
-                                this.gettingIdentifyCodeBtnContent = '获取验证码';
-                                this.canGetIdentifyCode = false;
+                                _this.gettingIdentifyCodeBtnContent = '获取验证码';
+                                _this.canGetIdentifyCode = false;
                             }
                         }, 1000);
-                        this.inputCodeVisible = true;
+                        _this.inputCodeVisible = true;
                         // you can write ajax request here
-                        let email = this.userData.mail;
-                        axios.post('/api/verificationCodes', { 'email': email }).then(response => {
-                            console.log(response);
+                        let email = _this.formData.mail;
+                        axios.post('/api/verificationCodes', {'email': email}).then(response => {
+                            if (response.status == 201) {
+                                _this.key = response.data.key;
+                            } else {
+                                _this.$Message.error('获取验证码异常，请重试。');
+                            }
                         });
                     }
                 });
             },
-            cancelInputCodeBox () {
-                this.inputCodeVisible = false;
-            },
-            getCode (email) {
-
-            },
-            submitCode () {
-                let vm = this;
-                vm.checkIdentifyCodeLoading = true;
-                if (this.securityCode.length === 0) {
+            submitCode() {
+                if (this.formData.verifyCode.length === 0) {
                     this.$Message.error('请填写验证码');
                 } else {
-                    // 已验证
-                    vm.isValid = true;
                     setTimeout(() => {
                         this.$Message.success('验证码正确');
                         this.inputCodeVisible = false;
-                        this.checkIdentifyCodeLoading = false;
                     }, 1000);
                 }
             },
