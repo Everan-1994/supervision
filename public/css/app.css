@@ -38,8 +38,8 @@
 }
 
 .img-code {
-  max-width: 115px;
-  max-height: 32px;
+  width: 115px;
+  height: 32px;
   border-radius: 0 6px 6px 0;
   border: 1px solid #dddee1;
   border-left: 0;

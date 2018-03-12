@@ -18,7 +18,7 @@
                     <Input style="width: 94%;" v-model="formData.mail" placeholder="Enter your e-mail"></Input>
                 </FormItem>
                 <FormItem label="密码：" prop="password">
-                    <Input style="width: 94%;" v-model="formData.password" placeholder="Enter your password"></Input>
+                    <Input type="password" style="width: 94%;" v-model="formData.password" placeholder="Enter your password"></Input>
                 </FormItem>
                 <FormItem label="验证码：" prop="captcha">
                     <Input style="width: 94%; border-right: 0;" v-model="formData.captcha"
@@ -46,6 +46,8 @@
 
 </template>
 <script>
+    import JWT from '../../helpers/jwt';
+
     export default {
         data() {
             return {
@@ -77,7 +79,7 @@
             handleSubmit(name) {
                 let _this = this;
                 let formData = {
-                    'email': _this.formData.email,
+                    'email': _this.formData.mail,
                     'password': _this.formData.password,
                     'captcha': _this.formData.captcha,
                     'captcha_key': _this.captcha_key
@@ -85,7 +87,16 @@
                 _this.$refs[name].validate((valid) => {
                     if (valid) {
                         axios.post('/api/authorizations', formData).then(response => {
-
+                            JWT.setToken(response.data.meta.access_token);
+                            _this.$store.dispatch('setAuthUser', response.data);
+                            _this.$Message.success({
+                                content: '登陆成功',
+                                onClose: () => {
+                                    _this.$router.push({ 'name': 'index' })
+                                }
+                            });
+                        }).catch(error => {
+                            _this.$Message.error(error.response.data.message || '服务器异常');
                         });
                     }
                 })
