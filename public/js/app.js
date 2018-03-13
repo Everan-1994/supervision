@@ -50962,8 +50962,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -50994,6 +50992,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 identify: '1',
                 verifyCode: '' // 验证码
             },
+            departments: [],
             key: '',
             mailData: [], // 自动补全数组
             verifyCode: '', // 验证码
@@ -51003,7 +51002,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             canGetIdentifyCode: false, // 是否可点获取验证码
             isValid: false,
             ruleValidate: {
-                department: [{ required: true, message: '请选择系部', trigger: 'change' }],
+                department: [{ required: true, message: '请选择系部', pattern: /.+/, trigger: 'change' }],
                 truename: [{ required: true, message: '请写填姓名', trigger: 'blur' }],
                 mail: [{ required: true, message: '请填写邮箱', trigger: 'blur' }, { type: 'email', message: '邮箱格式不正确', trigger: 'change' }],
                 password: [{ required: true, message: '请填写密码', trigger: 'blur' }, { min: 6, message: '密码不得少于6位', trigger: 'blur' }, { max: 18, message: '密码不得超出18位', trigger: 'blur' }],
@@ -51011,6 +51010,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 verifyCode: [{ required: true, message: '请输入验证码', trigger: 'blur' }, { validator: hasGetCode, trigger: 'blur' }]
             }
         };
+    },
+    mounted: function mounted() {
+        var _this = this;
+        axios.get('/api/department').then(function (response) {
+            _this.departments = response.data.data;
+        });
     },
 
     methods: {
@@ -51034,14 +51039,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         verification_code: _this.formData.verifyCode
                     };
                     axios.post('/api/users', formData).then(function (response) {
-                        if (response.status == 201) {
-                            _this3.$Message.success('注册成功！');
-                            setTimeout(function () {
+                        _this3.$Message.success({
+                            content: '注册成功！',
+                            onClose: function onClose() {
                                 _this.$router.push({ 'name': 'login' });
-                            }, 1500);
-                        } else {
-                            _this3.$Message.error('注册失败，请稍候重试。');
-                        }
+                            }
+                        });
+                    }).catch(function (error) {
+                        _this3.$Message.error(error.response.message);
                     });
                 }
             });
@@ -51072,13 +51077,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 // you can write ajax request here
                 var email = _this.formData.mail;
                 axios.post('/api/verificationCodes', { 'email': email }).then(function (response) {
-                    if (response.status == 201) {
-                        _this.$Message.success('验证码已发送，注意查收。');
-                        _this.key = response.data.key;
-                    } else if (response.status == 429) {
+                    _this.$Message.success('验证码已发送，注意查收。');
+                    _this.key = response.data.key;
+                }).catch(function (error) {
+                    if (error.response.status == 429) {
                         _this.$Message.error('发送邮件过于频繁，请一分钟后再试。');
                     } else {
-                        _this.$Message.error('获取验证码异常，请重试。');
+                        _this.$Message.error('系统异常，请稍候再试。');
                     }
                 });
             } else {
@@ -51148,20 +51153,13 @@ var render = function() {
                             expression: "formData.department"
                           }
                         },
-                        [
-                          _c("Option", { attrs: { value: "1" } }, [
-                            _vm._v("计算机系")
-                          ]),
-                          _vm._v(" "),
-                          _c("Option", { attrs: { value: "2" } }, [
-                            _vm._v("工商系")
-                          ]),
-                          _vm._v(" "),
-                          _c("Option", { attrs: { value: "3" } }, [
-                            _vm._v("汽车系")
-                          ])
-                        ],
-                        1
+                        _vm._l(_vm.departments, function(item) {
+                          return _c(
+                            "Option",
+                            { key: item.id, attrs: { value: item.id } },
+                            [_vm._v(_vm._s(item.department))]
+                          )
+                        })
                       )
                     ],
                     1

@@ -29,6 +29,9 @@ $api->version('v1', [
         // 删除token
         $api->delete('authorizations/current', 'AuthorizationsController@destroy')
             ->name('api.authorizations.destroy');
+        // 系部列表
+        $api->get('department', 'DepartmentController@index')
+            ->name('api.department.index');
     });
 
 });

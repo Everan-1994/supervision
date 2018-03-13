@@ -9,9 +9,7 @@
             <Form ref="formData" :model="formData" :rules="ruleValidate" :label-width="83">
                 <FormItem label="系部：" prop="department">
                     <Select v-model="formData.department" style="width: 94%;">
-                        <Option value="1">计算机系</Option>
-                        <Option value="2">工商系</Option>
-                        <Option value="3">汽车系</Option>
+                        <Option v-for="item in departments" :key="item.id" :value="item.id">{{ item.department }}</Option>
                     </Select>
                 </FormItem>
                 <FormItem label="姓名：" prop="truename">
@@ -113,6 +111,7 @@
                     identify: '1',
                     verifyCode: '', // 验证码
                 },
+                departments: [],
                 key: '',
                 mailData: [], // 自动补全数组
                 verifyCode: '', // 验证码
@@ -123,7 +122,7 @@
                 isValid: false,
                 ruleValidate: {
                     department: [
-                        {required: true, message: '请选择系部', trigger: 'change'}
+                        {required: true, message: '请选择系部', pattern:/.+/, trigger: 'change'}
                     ],
                     truename: [
                         {required: true, message: '请写填姓名', trigger: 'blur'}
@@ -147,6 +146,12 @@
                     ],
                 }
             };
+        },
+        mounted () {
+            let _this = this;
+            axios.get('/api/department').then(response => {
+                _this.departments = response.data.data;
+            });
         },
         methods: {
             handleSearch(value) {
@@ -173,14 +178,14 @@
                             verification_code: _this.formData.verifyCode
                         };
                         axios.post('/api/users', formData).then(response => {
-                            if (response.status == 201) {
-                                this.$Message.success('注册成功！');
-                                setTimeout(() => {
+                            this.$Message.success({
+                                content: '注册成功！',
+                                onClose: () => {
                                     _this.$router.push({'name': 'login'});
-                                }, 1500);
-                            } else {
-                                this.$Message.error('注册失败，请稍候重试。');
-                            }
+                                }
+                            });
+                        }).catch(error => {
+                            this.$Message.error(error.response.message);
                         });
                     }
                 })
@@ -211,13 +216,13 @@
                     // you can write ajax request here
                     let email = _this.formData.mail;
                     axios.post('/api/verificationCodes', {'email': email}).then(response => {
-                        if (response.status == 201) {
-                            _this.$Message.success('验证码已发送，注意查收。');
-                            _this.key = response.data.key;
-                        } else if (response.status == 429) {
+                        _this.$Message.success('验证码已发送，注意查收。');
+                        _this.key = response.data.key;
+                    }).catch(error => {
+                        if (error.response.status == 429) {
                             _this.$Message.error('发送邮件过于频繁，请一分钟后再试。');
                         } else {
-                            _this.$Message.error('获取验证码异常，请重试。');
+                            _this.$Message.error('系统异常，请稍候再试。');
                         }
                     });
                 } else {
