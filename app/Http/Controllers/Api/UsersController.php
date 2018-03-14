@@ -36,4 +36,12 @@ class UsersController extends Controller
 
         return $this->response->item($user, new UserTransformer())->setStatusCode(201);
     }
+
+    /**
+     * 用户信息
+     */
+    public function me()
+    {
+        return $this->response->item($this->user(), new UserTransformer());
+    }
 }

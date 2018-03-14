@@ -29,25 +29,24 @@ class AuthorizationsController extends Controller
             return $this->response->errorUnauthorized('用户名或密码错误');
         }
 
-        return $this->response->item(\Auth::guard('api')->user(), new UserTransformer())
-            ->setMeta($this->respondWithToken($token))
-            ->setStatusCode(201);
+        return $this->respondWithToken($token);
 
     }
 
     public function respondWithToken($token)
     {
-        return [
-            'access_token' => $token,
-            'token_type'   => 'Bearer',
-            'expires_in'   => \Auth::guard('api')->factory()->getTTL() * 60
-        ];
+        return $this->response->item(\Auth::guard('api')->user(), new UserTransformer())
+            ->setMeta([
+                'access_token' => $token,
+                'token_type'   => 'Bearer',
+                'expires_in'   => \Auth::guard('api')->factory()->getTTL() * 60
+            ])->setStatusCode(201);
     }
 
     public function update()
     {
         $token = \Auth::guard('api')->refresh();
-        return $this->response->array($this->respondWithToken($token));
+        return $this->respondWithToken($token);
     }
 
     public function destroy()

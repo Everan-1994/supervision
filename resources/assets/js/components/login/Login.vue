@@ -92,7 +92,7 @@
                             _this.$Message.success({
                                 content: '登陆成功',
                                 onClose: () => {
-                                    _this.$router.push({ 'name': 'index' })
+                                    _this.$router.push({ name: 'profile' })
                                 }
                             });
                         }).catch(error => {

@@ -8,12 +8,16 @@ import router from './routes';
 import store from './store/index';
 import JWT from './helpers/jwt';
 import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 
 Vue.use(vueRouter);
 Vue.use(iView);
+
+// 禁用进度环
+NProgress.configure({ showSpinner: false });
 
 // 请求拦截器
 axios.interceptors.request.use(function (config) {

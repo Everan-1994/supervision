@@ -9,7 +9,6 @@
   background-color: #fff;
   -webkit-box-shadow: 0px 1px 11px 2px rgba(42, 42, 42, 0.1);
           box-shadow: 0px 1px 11px 2px rgba(42, 42, 42, 0.1);
-  border-top: 4px solid #2d8cf0;
   margin-bottom: 40px;
   margin-top: 0px;
 }
@@ -35,6 +34,90 @@
   width: 420px;
   margin: 0 auto;
   margin-right: -200px;
+}
+
+.header-avator-con {
+  position: absolute;
+  right: 35px;
+  top: 0;
+  height: 100%;
+  width: 200px;
+}
+
+.header-avator-con .switch-theme-con {
+  display: inline-block;
+  width: 40px;
+  height: 100%;
+}
+
+.header-avator-con .message-con {
+  display: inline-block;
+  width: 30px;
+  padding: 18px 0;
+  text-align: center;
+  cursor: pointer;
+}
+
+.header-avator-con .message-con i {
+  vertical-align: middle;
+}
+
+.header-avator-con .change-skin {
+  font-size: 14px;
+  font-weight: 500;
+  padding-right: 5px;
+}
+
+.header-avator-con .switch-theme {
+  height: 100%;
+}
+
+.header-avator-con .user-dropdown-menu-con {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 150px;
+  height: 100%;
+}
+
+.header-avator-con .user-dropdown-menu-con .main-user-name {
+  display: inline-block;
+  width: 80px;
+  word-break: keep-all;
+  white-space: nowrap;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+
+.header-avator-con .user-dropdown-innercon {
+  height: 100%;
+  padding-right: 14px;
+}
+
+.header-avator-con .full-screen-btn-con {
+  display: inline-block;
+  width: 30px;
+  padding: 18px 0;
+  text-align: center;
+  cursor: pointer;
+}
+
+.header-avator-con .full-screen-btn-con i {
+  vertical-align: middle;
+}
+
+.header-avator-con .lock-screen-btn-con {
+  display: inline-block;
+  width: 30px;
+  padding: 18px 0;
+  text-align: center;
+  cursor: pointer;
+}
+
+.header-avator-con .lock-screen-btn-con i {
+  vertical-align: middle;
 }
 
 .img-code {
