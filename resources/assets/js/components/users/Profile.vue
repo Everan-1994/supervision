@@ -1,7 +1,7 @@
 <template>
     <Card>
         <div style="min-height: 200px;">
-            <p>profile</p>
+            <p>Profile</p>
         </div>
     </Card>
 </template>

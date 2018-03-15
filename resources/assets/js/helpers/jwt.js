@@ -7,5 +7,11 @@ export default {
     },
     removeToken() {
         window.localStorage.removeItem('jwt_token');
+    },
+    getAuthUser () {
+        return JSON.parse(window.localStorage.getItem('vuex'));
+    },
+    removeAuthUser () {
+        window.localStorage.removeItem('vuex');
     }
 }

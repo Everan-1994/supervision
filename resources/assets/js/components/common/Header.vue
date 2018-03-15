@@ -38,8 +38,12 @@
                             <Icon type="arrow-down-b"></Icon>
                         </a>
                         <DropdownMenu slot="list">
-                            <DropdownItem @click="menus('ownSpace')">个人中心</DropdownItem>
-                            <DropdownItem @click="menus('logout')" divided>退出登录</DropdownItem>
+                            <DropdownItem name="own" >
+                                <a href="javascript:void(0)" @click="menus('own')">个人中心</a>
+                            </DropdownItem>
+                            <DropdownItem name="logout" divided>
+                                <a href="javascript:void(0)" @click="menus('logout')">安全退出</a>
+                            </DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
                     <Avatar style="background-color: #87d068; margin-left: 10px;" icon="person"/>
@@ -61,11 +65,7 @@
             }),
         },
         mounted() {
-            if (!Store.state.authenticated) {
-                this.getUserInfo();
-            } else {
-                this.refreshToken();
-            }
+            this.getUserInfo(); // 现获取用户信息 && 判断token是否过期
         },
         methods: {
             getUserInfo() {
@@ -86,6 +86,7 @@
                     _this.$store.dispatch('unsetAuthUser');
                     _this.$Message.warning({
                         content: '身份信息已过期，请重新登陆。',
+                        duration: 2,
                         onClose: () => {
                             _this.$router.push({name: 'login'});
                         }
@@ -94,7 +95,7 @@
             },
             menus(name) {
                 let _this = this;
-                if (name === 'ownSpace') {
+                if (name === 'own') {
                     _this.$router.push({
                         name: 'profile'
                     });

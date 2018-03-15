@@ -7,6 +7,7 @@ import App from './components/App';
 import router from './routes';
 import store from './store/index';
 import JWT from './helpers/jwt';
+
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 

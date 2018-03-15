@@ -1,5 +1,5 @@
 import vueRouter from 'vue-router';
-import Store from './store/modules/auth-user';
+import State from './helpers/jwt';
 
 let routes = [
     {
@@ -33,15 +33,16 @@ const router = new vueRouter({
 });
 
 router.beforeEach((to, form, next) => {
+    let AuthUser = State.getAuthUser().AuthUser;
     if (to.meta.requireAuth) {
-        if (Store.state.authenticated) {
+        if (AuthUser.authenticated) {
             return next();
         } else {
             return next({name: 'login'});
         }
     }
     if (to.meta.requireGuest) {
-        if (Store.state.authenticated) {
+        if (AuthUser.authenticated) {
             return next({name: 'index'});
         } else {
             return next();
