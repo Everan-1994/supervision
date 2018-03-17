@@ -9,7 +9,9 @@
 <script>
 
     export default {
-
+        mounted() {
+            this.$store.dispatch('setMenu', 'index');
+        }
     }
 
 </script>

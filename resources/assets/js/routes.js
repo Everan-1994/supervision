@@ -33,7 +33,7 @@ const router = new vueRouter({
 });
 
 router.beforeEach((to, form, next) => {
-    let AuthUser = State.getAuthUser().AuthUser;
+    let AuthUser = State.getVuex().AuthUser;
     if (to.meta.requireAuth) {
         if (AuthUser.authenticated) {
             return next();

@@ -8,10 +8,10 @@ export default {
     removeToken() {
         window.localStorage.removeItem('jwt_token');
     },
-    getAuthUser () {
+    getVuex() {
         return JSON.parse(window.localStorage.getItem('vuex'));
     },
-    removeAuthUser () {
+    removeVuex() {
         window.localStorage.removeItem('vuex');
     }
 }

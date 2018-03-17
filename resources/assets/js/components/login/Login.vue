@@ -73,6 +73,7 @@
             }
         },
         mounted() {
+            this.$store.dispatch('setMenu', 'login');
             this.codeInit();
         },
         methods: {

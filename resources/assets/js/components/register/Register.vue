@@ -149,6 +149,7 @@
         },
         mounted () {
             let _this = this;
+            _this.$store.dispatch('setMenu', 'register');
             axios.get('/api/department').then(response => {
                 _this.departments = response.data.data;
             });

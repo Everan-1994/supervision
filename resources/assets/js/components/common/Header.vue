@@ -1,34 +1,34 @@
 <template>
-    <Menu mode="horizontal" active-name="1">
+    <Menu mode="horizontal" :active-name="menu.activeMenu" @on-select="select">
         <div class="layout-logo"></div>
         <div class="layout-nav">
-            <MenuItem name="1">
+            <MenuItem name="index">
                 <Icon type="radio-waves"></Icon>
                 系统公告
             </MenuItem>
-            <MenuItem name="2">
+            <MenuItem name="lesson">
                 <Icon type="easel"></Icon>
                 总课表
             </MenuItem>
-            <MenuItem name="3">
+            <MenuItem name="process_table">
                 <Icon type="ios-bookmarks-outline"></Icon>
                 授课进程表
             </MenuItem>
-            <MenuItem name="4">
+            <MenuItem name="heads">
                 <Icon type="ios-people"></Icon>
                 负责人名单
             </MenuItem>
-            <MenuItem name="5">
+            <MenuItem name="plans">
                 <Icon type="ios-bookmarks-outline"></Icon>
                 授课计划
             </MenuItem>
-            <MenuItem name="6">
+            <MenuItem name="system_setup">
                 <Icon type="gear-b"></Icon>
                 系统设置
             </MenuItem>
         </div>
         <div class="login-register" v-if="!user.authenticated">
-            <MenuItem name="7">
+            <MenuItem name="login">
                 <router-link to="/login">
                     <Button type="ghost">
                         <Icon type="log-in"></Icon>
@@ -36,7 +36,7 @@
                     </Button>
                 </router-link>
             </MenuItem>
-            <MenuItem name="8">
+            <MenuItem name="register">
                 <router-link to="/register">
                     <Button type="ghost">
                         <Icon type="edit"></Icon>
@@ -71,14 +71,14 @@
 
 <script>
     import JWT from './../../helpers/jwt';
-    import Store from './../../store/modules/auth-user';
     import {mapState} from 'vuex';
 
     export default {
         computed: {
             ...mapState({
-                user: state => state.AuthUser
-            }),
+                user: state => state.AuthUser,
+                menu: state => state.Menu
+            })
         },
         mounted() {
             this.getUserInfo(); // 现获取用户信息 && 判断token是否过期
@@ -125,6 +125,9 @@
                         }
                     });
                 }
+            },
+            select(name) {
+                this.$store.dispatch('setMenu', name);
             }
         }
     }
