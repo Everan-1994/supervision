@@ -7,12 +7,28 @@
                 系统公告
             </MenuItem>
             <MenuItem name="2">
+                <Icon type="easel"></Icon>
+                总课表
+            </MenuItem>
+            <MenuItem name="3">
+                <Icon type="ios-bookmarks-outline"></Icon>
+                授课进程表
+            </MenuItem>
+            <MenuItem name="4">
+                <Icon type="ios-people"></Icon>
+                负责人名单
+            </MenuItem>
+            <MenuItem name="5">
                 <Icon type="ios-bookmarks-outline"></Icon>
                 授课计划
             </MenuItem>
+            <MenuItem name="6">
+                <Icon type="gear-b"></Icon>
+                系统设置
+            </MenuItem>
         </div>
         <div class="login-register" v-if="!user.authenticated">
-            <MenuItem name="5">
+            <MenuItem name="7">
                 <router-link to="/login">
                     <Button type="ghost">
                         <Icon type="log-in"></Icon>
@@ -20,7 +36,7 @@
                     </Button>
                 </router-link>
             </MenuItem>
-            <MenuItem name="6">
+            <MenuItem name="8">
                 <router-link to="/register">
                     <Button type="ghost">
                         <Icon type="edit"></Icon>

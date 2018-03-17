@@ -51266,6 +51266,22 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -51366,8 +51382,48 @@ var render = function() {
           "MenuItem",
           { attrs: { name: "2" } },
           [
+            _c("Icon", { attrs: { type: "easel" } }),
+            _vm._v("\n            总课表\n        ")
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "MenuItem",
+          { attrs: { name: "3" } },
+          [
+            _c("Icon", { attrs: { type: "ios-bookmarks-outline" } }),
+            _vm._v("\n            授课进程表\n        ")
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "MenuItem",
+          { attrs: { name: "4" } },
+          [
+            _c("Icon", { attrs: { type: "ios-people" } }),
+            _vm._v("\n            负责人名单\n        ")
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "MenuItem",
+          { attrs: { name: "5" } },
+          [
             _c("Icon", { attrs: { type: "ios-bookmarks-outline" } }),
             _vm._v("\n            授课计划\n        ")
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "MenuItem",
+          { attrs: { name: "6" } },
+          [
+            _c("Icon", { attrs: { type: "gear-b" } }),
+            _vm._v("\n            系统设置\n        ")
           ],
           1
         )
@@ -51382,7 +51438,7 @@ var render = function() {
           [
             _c(
               "MenuItem",
-              { attrs: { name: "5" } },
+              { attrs: { name: "7" } },
               [
                 _c(
                   "router-link",
@@ -51406,7 +51462,7 @@ var render = function() {
             _vm._v(" "),
             _c(
               "MenuItem",
-              { attrs: { name: "6" } },
+              { attrs: { name: "8" } },
               [
                 _c(
                   "router-link",
@@ -53104,7 +53160,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({});
@@ -53117,11 +53172,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("Card", [
-    _c("div", { staticStyle: { "min-height": "200px" } }, [
-      _c("p", [_vm._v("Profile")])
-    ])
-  ])
+  return _c("Card", [_c("div", { staticStyle: { "min-height": "200px" } })])
 }
 var staticRenderFns = []
 render._withStripped = true
