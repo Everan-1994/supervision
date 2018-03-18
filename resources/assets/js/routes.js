@@ -25,6 +25,12 @@ let routes = [
         component: require('./components/users/Profile'),
         meta: { requireAuth: true }
     },
+    {
+        path: '/system',
+        name: 'system',
+        component: require('./components/pages/System'),
+        meta: { requireAuth: true }
+    },
 ];
 
 const router = new vueRouter({

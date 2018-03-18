@@ -6,25 +6,27 @@
                 <Icon type="radio-waves"></Icon>
                 系统公告
             </MenuItem>
-            <MenuItem name="lesson">
+            <MenuItem name="lesson" v-if="user.authenticated">
                 <Icon type="easel"></Icon>
                 总课表
             </MenuItem>
-            <MenuItem name="process_table">
+            <MenuItem name="process_table" v-if="user.authenticated">
                 <Icon type="ios-bookmarks-outline"></Icon>
                 授课进程表
             </MenuItem>
-            <MenuItem name="heads">
+            <MenuItem name="heads" v-if="user.authenticated">
                 <Icon type="ios-people"></Icon>
                 负责人名单
             </MenuItem>
-            <MenuItem name="plans">
+            <MenuItem name="plans" v-if="user.authenticated">
                 <Icon type="ios-bookmarks-outline"></Icon>
                 授课计划
             </MenuItem>
-            <MenuItem name="system_setup">
-                <Icon type="gear-b"></Icon>
-                系统设置
+            <MenuItem name="system_setup" v-if="user.authenticated">
+                <router-link to="/system">
+                    <Icon type="gear-b"></Icon>
+                    系统设置
+                </router-link>
             </MenuItem>
         </div>
         <div class="login-register" v-if="!user.authenticated">
@@ -39,7 +41,7 @@
             <MenuItem name="register">
                 <router-link to="/register">
                     <Button type="ghost">
-                        <Icon type="edit"></Icon>
+                        <Icon type="paper-airplane"></Icon>
                         注册
                     </Button>
                 </router-link>
