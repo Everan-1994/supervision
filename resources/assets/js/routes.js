@@ -27,9 +27,28 @@ let routes = [
     },
     {
         path: '/system',
-        name: 'system',
         component: require('./components/pages/System'),
-        meta: { requireAuth: true }
+        meta: { requireAuth: true },
+        children: [
+            {
+                path: '',
+                name: 'configures',
+                component: require('./components/pages/systems/Configures'),
+                meta: { requireAuth: true }
+            },
+            {
+                path: '/departments',
+                name: 'departments',
+                component: require('./components/pages/systems/Departments'),
+                meta: { requireAuth: true }
+            },
+            {
+                path: '/notices',
+                name: 'notices',
+                component: require('./components/pages/systems/Notices'),
+                meta: { requireAuth: true }
+            }
+        ]
     },
 ];
 

@@ -11,4 +11,9 @@ class DepartmentController extends Controller
     {
         return $this->response->collection(Department::all(), new DepartmentTransformer());
     }
+
+    public function departmentList()
+    {
+        return $this->response->paginator(Department::paginate(20), new DepartmentTransformer());
+    }
 }

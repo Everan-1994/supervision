@@ -73,7 +73,7 @@
             }
         },
         mounted() {
-            this.$store.dispatch('setMenu', 'login');
+            this.$store.dispatch('setMenu', {'activeMenu': 'login'});
             this.codeInit();
         },
         methods: {

@@ -149,7 +149,7 @@
         },
         mounted () {
             let _this = this;
-            _this.$store.dispatch('setMenu', 'register');
+            _this.$store.dispatch('setMenu', {'activeMenu': 'register'});
             axios.get('/api/department').then(response => {
                 _this.departments = response.data.data;
             });

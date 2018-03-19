@@ -10,7 +10,7 @@
 
     export default {
         mounted() {
-            this.$store.dispatch('setMenu', 'index');
+            this.$store.dispatch('setMenu', {'activeMenu': 'index'});
         }
     }
 

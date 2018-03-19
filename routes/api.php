@@ -47,6 +47,9 @@ $api->version('v1', [
             // 当前登录用户信息
             $api->get('user', 'UsersController@me')
                 ->name('api.user.show');
+            // 组织机构
+            $api->get('departments', 'DepartmentController@departmentList')
+                ->name('api.department.departmentList');
         });
     });
 

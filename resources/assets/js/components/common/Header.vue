@@ -129,7 +129,11 @@
                 }
             },
             select(name) {
-                this.$store.dispatch('setMenu', name);
+                if (name == 'system_setup') {
+                    this.$store.dispatch('setMenu', {'activeMenu': name, 'childMenu': 'configures'});
+                } else {
+                    this.$store.dispatch('setMenu', {'activeMenu': name});
+                }
             }
         }
     }
