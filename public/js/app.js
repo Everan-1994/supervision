@@ -52208,6 +52208,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
@@ -52225,7 +52226,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 mail: [{ required: true, message: '请填写邮箱', trigger: 'blur' }, { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }],
                 password: [{ required: true, message: '请填写密码', trigger: 'blur' }],
                 captcha: [{ required: true, message: '请填写验证码', trigger: 'blur' }]
-            }
+            },
+            loading: false
         };
     },
     mounted: function mounted() {
@@ -52236,6 +52238,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     methods: {
         handleSubmit: function handleSubmit(name) {
             var _this = this;
+            _this.loading = true;
             var formData = {
                 'email': _this.formData.mail,
                 'password': _this.formData.password,
@@ -52254,8 +52257,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                             }
                         });
                     }).catch(function (error) {
+                        _this.loading = false;
                         _this.$Message.error(error.response.data.message || '服务器异常');
                     });
+                } else {
+                    _this.loading = false;
                 }
             });
         },
@@ -52411,7 +52417,7 @@ var render = function() {
                         "Button",
                         {
                           staticStyle: { "margin-left": "8px" },
-                          attrs: { type: "primary" },
+                          attrs: { type: "primary", loading: _vm.loading },
                           on: {
                             click: function($event) {
                               _vm.handleSubmit("formData")
@@ -53693,6 +53699,21 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -53700,12 +53721,18 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         var _this2 = this;
 
         return {
+            formData: {
+                department: ''
+            },
+            ruleValidate: {
+                department: [{ required: true, message: '请填写组织机构', rigger: 'blur' }]
+            },
             department_id: 0,
-            count: 0,
-            current_page: 1,
-            pre_page: 10,
-            pageSizeOpts: [10, 20, 30, 50],
+            total: 0,
+            page: 1,
+            pageSize: 15,
             loading: true,
+            modal_loading: false,
             columns: [{
                 key: 'id',
                 title: '序号',
@@ -53725,7 +53752,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         props: {
                             type: 'primary',
                             size: 'small',
-                            icon: 'search'
+                            icon: 'edit'
                         },
                         style: {
                             marginRight: '5px'
@@ -53733,26 +53760,35 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         on: {
                             click: function click() {
                                 _this2.department_id = params.row.id;
+                                _this2.departmentModel();
                             }
                         }
-                    }, '编辑'), h('Button', {
+                    }, '编辑'), h('Poptip', {
                         props: {
-                            type: 'error',
-                            size: 'small',
-                            icon: 'gear-a'
+                            confirm: true,
+                            title: '确定要删除这条数据吗?',
+                            transfer: true
                         },
+                        on: {
+                            'on-ok': function onOk() {
+                                _this2.deleteDepartmentById(params.row.id, params.index);
+                            }
+                        }
+                    }, [h('Button', {
                         style: {
                             marginRight: '5px'
                         },
-                        on: {
-                            click: function click() {
-                                _this2.del(params.row.id);
-                            }
+                        props: {
+                            type: 'error',
+                            size: 'small',
+                            placement: 'top',
+                            icon: 'trash-a'
                         }
-                    }, '删除')]);
+                    }, '删除')])]);
                 }
             }],
-            departments: []
+            departments: [],
+            dModel: false
         };
     },
     mounted: function mounted() {
@@ -53763,27 +53799,87 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         getDepartmentList: function getDepartmentList() {
             var _this = this;
             var params = {
-                current_page: _this.current_page,
-                per_page: _this.per_page
+                page: _this.page,
+                pageSize: _this.pageSize
             };
             axios.get('/api/departments', { params: params }).then(function (response) {
                 _this.departments = response.data.data;
-                _this.count = response.data.meta.pagination.count;
+                _this.total = response.data.meta.pagination.total;
                 _this.loading = false;
             });
         },
         changePage: function changePage(value) {
             this.loading = true;
-            this.current_page = value;
+            this.page = value;
             this.getDepartmentList();
         },
-        changePageSize: function changePageSize(value) {
-            this.loading = true;
-            this.per_page = value;
-            this.getDepartmentList();
+        departmentModel: function departmentModel() {
+            var _this = this;
+            if (_this.department_id > 0) {
+                axios.get('/api/departments/' + _this.department_id).then(function (response) {
+                    _this.formData.department = response.data.department;
+                    _this.department_id = response.data.id;
+                }).catch(function (error) {
+                    _this.$Message.error('初始化数据失败，待会再试！', 1.5);
+                });
+            }
+            _this.dModel = true;
         },
-        del: function del(id) {
-            console.log(id);
+        cancelModel: function cancelModel() {
+            this.formData.department = '';
+            this.department_id = 0;
+            this.modal_loading = false;
+        },
+        department: function department() {
+            var _this = this;
+            _this.modal_loading = true;
+            this.$refs['formData'].validate(function (valid) {
+                if (valid) {
+                    var formData = {
+                        department: _this.formData.department
+                    };
+                    if (_this.department_id > 0) {
+                        axios.patch('/api/departments/' + _this.department_id, formData).then(function (response) {
+                            _this.respond('更新成功');
+                        }).catch(function (error) {
+                            _this.$Notice.error({
+                                title: '错误提醒',
+                                desc: error.response.data.errors.department[0] || '更新失败，请重试！'
+                            });
+                        });
+                        _this.modal_loading = false;
+                    } else {
+                        axios.post('/api/departments', formData).then(function (response) {
+                            _this.respond('添加成功');
+                        }).catch(function (error) {
+                            _this.$Notice.error({
+                                title: '错误提醒',
+                                desc: error.response.data.errors.department[0] || '添加失败，请重试！'
+                            });
+                        });
+                        _this.modal_loading = false;
+                    }
+                }
+            });
+        },
+        respond: function respond(msg) {
+            var _this = this;
+            _this.dModel = false;
+            _this.$Message.success(msg);
+            _this.getDepartmentList();
+            _this.$refs['formData'].resetFields();
+        },
+        deleteDepartmentById: function deleteDepartmentById(id, index) {
+            var _this = this;
+            axios.delete('/api/departments/' + id).then(function (response) {
+                _this.$Message.success('删除成功', 1.5);
+                _this.remove(index);
+            }).catch(function (error) {
+                _this.$Message.error('删除失败', 1.5);
+            });
+        },
+        remove: function remove(index) {
+            this.departments.splice(index, 1);
         }
     }
 });
@@ -53799,39 +53895,151 @@ var render = function() {
   return _c(
     "div",
     [
+      _c(
+        "div",
+        { staticStyle: { "margin-bottom": "10px" } },
+        [
+          _c(
+            "Button",
+            {
+              attrs: { type: "primary", icon: "plus-round" },
+              on: { click: _vm.departmentModel }
+            },
+            [_vm._v("新增组织机构")]
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
       _c("Table", {
         attrs: {
+          stripe: "",
           columns: _vm.columns,
           data: _vm.departments,
           loading: _vm.loading
         }
       }),
       _vm._v(" "),
-      _c("div", { staticStyle: { margin: "10px", "padding-bottom": "1px" } }, [
-        _c(
-          "div",
-          { staticStyle: { float: "right" } },
-          [
-            _c("Page", {
-              attrs: {
-                total: _vm.count,
-                current: _vm.current_page,
-                "page-size": _vm.pre_page,
-                "show-sizer": "",
-                "show-elevator": "",
-                "show-total": "",
-                "page-size-opts": _vm.pageSizeOpts,
-                placement: "top"
-              },
-              on: {
-                "on-change": _vm.changePage,
-                "on-page-size-change": _vm.changePageSize
-              }
-            })
-          ],
-          1
-        )
-      ])
+      _vm.total > 0
+        ? _c(
+            "div",
+            { staticStyle: { margin: "10px", "padding-bottom": "1px" } },
+            [
+              _c(
+                "div",
+                { staticStyle: { float: "right" } },
+                [
+                  _c("Page", {
+                    attrs: {
+                      total: _vm.total,
+                      current: _vm.page,
+                      "page-size": _vm.pageSize
+                    },
+                    on: { "on-change": _vm.changePage }
+                  })
+                ],
+                1
+              )
+            ]
+          )
+        : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "Modal",
+        {
+          attrs: { width: "360" },
+          on: { "on-cancel": _vm.cancelModel },
+          model: {
+            value: _vm.dModel,
+            callback: function($$v) {
+              _vm.dModel = $$v
+            },
+            expression: "dModel"
+          }
+        },
+        [
+          _c(
+            "p",
+            {
+              staticStyle: { color: "#f60", "text-align": "center" },
+              attrs: { slot: "header" },
+              slot: "header"
+            },
+            [
+              _c("Icon", {
+                attrs: { type: _vm.department_id > 0 ? "edit" : "plus-round" }
+              }),
+              _vm._v(" "),
+              _c("span", [
+                _vm._v(
+                  _vm._s(_vm.department_id > 0 ? "编辑" : "新增") + "组织机构"
+                )
+              ])
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticStyle: { "text-align": "center" } },
+            [
+              _c(
+                "Form",
+                {
+                  ref: "formData",
+                  attrs: {
+                    model: _vm.formData,
+                    rules: _vm.ruleValidate,
+                    "label-width": 72
+                  }
+                },
+                [
+                  _c(
+                    "FormItem",
+                    { attrs: { label: "名称：", prop: "department" } },
+                    [
+                      _c("Input", {
+                        attrs: { placeholder: "输入组织机构名称" },
+                        model: {
+                          value: _vm.formData.department,
+                          callback: function($$v) {
+                            _vm.$set(_vm.formData, "department", $$v)
+                          },
+                          expression: "formData.department"
+                        }
+                      })
+                    ],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          ),
+          _vm._v(" "),
+          _c(
+            "div",
+            { attrs: { slot: "footer" }, slot: "footer" },
+            [
+              _c(
+                "Button",
+                {
+                  attrs: {
+                    type: _vm.department_id > 0 ? "warning" : "primary",
+                    size: "large",
+                    long: "",
+                    loading: _vm.modal_loading
+                  },
+                  on: { click: _vm.department }
+                },
+                [_vm._v("提交")]
+              )
+            ],
+            1
+          )
+        ]
+      )
     ],
     1
   )

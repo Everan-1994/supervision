@@ -39,7 +39,7 @@ class AuthorizationsController extends Controller
             ->setMeta([
                 'access_token' => $token,
                 'token_type'   => 'Bearer',
-                'expires_in'   => \Auth::guard('api')->factory()->getTTL() * 60
+                'expires_in'   => \Auth::guard('api')->factory()->getTTL() * 60 * 2
             ])->setStatusCode(201);
     }
 

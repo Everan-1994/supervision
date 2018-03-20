@@ -47,9 +47,21 @@ $api->version('v1', [
             // 当前登录用户信息
             $api->get('user', 'UsersController@me')
                 ->name('api.user.show');
-            // 组织机构
+            // 组织机构列表
             $api->get('departments', 'DepartmentController@departmentList')
                 ->name('api.department.departmentList');
+            // 获取组织机构
+            $api->get('departments/{department}', 'DepartmentController@show')
+                ->name('api.department.show');
+            // 添加组织机构
+            $api->post('departments', 'DepartmentController@store')
+                ->name('api.department.store');
+            // 更新组织机构
+            $api->patch('departments/{department}', 'DepartmentController@update')
+                ->name('api.department.update');
+            // 删除组织机构
+            $api->delete('departments/{id}', 'DepartmentController@destroy')
+                ->name('api.department.destroy');
         });
     });
 

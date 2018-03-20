@@ -18,7 +18,8 @@
                     <Input style="width: 94%;" v-model="formData.mail" placeholder="Enter your e-mail"></Input>
                 </FormItem>
                 <FormItem label="密码：" prop="password">
-                    <Input type="password" style="width: 94%;" v-model="formData.password" placeholder="Enter your password"></Input>
+                    <Input type="password" style="width: 94%;" v-model="formData.password"
+                           placeholder="Enter your password"></Input>
                 </FormItem>
                 <FormItem label="验证码：" prop="captcha">
                     <Input style="width: 94%; border-right: 0;" v-model="formData.captcha"
@@ -30,7 +31,7 @@
                     </Input>
                 </FormItem>
                 <div class="ivu-form-item-content" style="text-align: center;">
-                    <Button type="primary" @click="handleSubmit('formData')" style="margin-left: 8px">
+                    <Button type="primary" @click="handleSubmit('formData')" :loading="loading" style="margin-left: 8px">
                         <Icon type="android-done"></Icon>
                         登陆
                     </Button>
@@ -69,7 +70,8 @@
                     captcha: [
                         {required: true, message: '请填写验证码', trigger: 'blur'}
                     ],
-                }
+                },
+                loading: false
             }
         },
         mounted() {
@@ -79,6 +81,7 @@
         methods: {
             handleSubmit(name) {
                 let _this = this;
+                _this.loading = true;
                 let formData = {
                     'email': _this.formData.mail,
                     'password': _this.formData.password,
@@ -93,12 +96,15 @@
                             _this.$Message.success({
                                 content: '登陆成功',
                                 onClose: () => {
-                                    _this.$router.push({ name: 'profile' })
+                                    _this.$router.push({name: 'profile'})
                                 }
                             });
                         }).catch(error => {
+                            _this.loading = false;
                             _this.$Message.error(error.response.data.message || '服务器异常');
                         });
+                    } else {
+                        _this.loading = false;
                     }
                 })
             },

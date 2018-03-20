@@ -16,7 +16,7 @@ class UserTransformer extends TransformerAbstract
             'email'      => $user->email,
             'sex'        => $user->sex == 1 ? '男' : '女',
             'identify'   => $user->identify == 1 ? '校内' : '校外',
-            'department' => $user->department->department,
+            'department' => $user->department_id == 0 ? 'Founder' : $user->department->department,
             'created_at' => $user->created_at->toDateTimeString(),
             'updated_at' => $user->updated_at->toDateTimeString(),
         ];

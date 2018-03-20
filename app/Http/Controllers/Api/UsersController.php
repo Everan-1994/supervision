@@ -24,11 +24,11 @@ class UsersController extends Controller
 
         $user = User::create([
             'department_id' => $request->department_id,
-            'name'       => $request->name,
-            'email'      => $request->email,
-            'password'   => bcrypt($request->password),
-            'sex'        => $request->sex,
-            'identify'   => $request->identify,
+            'name'          => $request->name,
+            'email'         => $request->email,
+            'password'      => bcrypt($request->password),
+            'sex'           => $request->sex,
+            'identify'      => $request->identify,
         ]);
 
         // 清除验证码缓存
