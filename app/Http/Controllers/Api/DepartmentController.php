@@ -9,6 +9,11 @@ use App\Http\Requests\Api\DepartmentRequest;
 
 class DepartmentController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('role')->only('store', 'update', 'destroy');
+    }
+
     public function index()
     {
         return $this->response->collection(Department::all(), new DepartmentTransformer());
@@ -38,25 +43,15 @@ class DepartmentController extends Controller
 
     public function update(DepartmentRequest $request, Department $department)
     {
-        $user = \Auth::guard('api')->user();
+        $department->update($request->all());
 
-        if ($user->hasRole(['Founder'])) {
-            $department->update($request->all());
-            return $this->response->item($department, new DepartmentTransformer());
-        }
-
-        return $this->response->errorUnauthorized('没有权限');
+        return $this->response->item($department, new DepartmentTransformer());
     }
 
     public function destroy(Department $department)
     {
-        $user = \Auth::guard('api')->user();
+        $department->delete();
 
-        if ($user->hasRole(['Founder'])) {
-            $department->delete();
-            return $this->response->noContent();
-        }
-
-        return $this->response->errorUnauthorized('没有权限');
+        return $this->response->noContent();
     }
 }

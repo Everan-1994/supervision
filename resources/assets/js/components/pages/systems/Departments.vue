@@ -157,6 +157,7 @@
                 this.formData.department = '';
                 this.department_id = 0;
                 this.modal_loading = false;
+                this.$refs['formData'].resetFields();
             },
             department() {
                 let _this = this;

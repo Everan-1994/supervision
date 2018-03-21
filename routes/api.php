@@ -60,7 +60,7 @@ $api->version('v1', [
             $api->patch('departments/{department}', 'DepartmentController@update')
                 ->name('api.department.update');
             // 删除组织机构
-            $api->delete('departments/{id}', 'DepartmentController@destroy')
+            $api->delete('departments/{department}', 'DepartmentController@destroy')
                 ->name('api.department.destroy');
         });
     });

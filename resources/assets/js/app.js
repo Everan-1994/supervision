@@ -37,6 +37,9 @@ axios.interceptors.response.use((response) => {
 }, (error) => {
     // 请求结束，蓝色过渡滚动条消失
     NProgress.done();
+    if (error.response.status == 403) {
+        router.push({name: '403'});
+    }
     return Promise.reject(error);
 });
 

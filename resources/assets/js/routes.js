@@ -3,6 +3,11 @@ import State from './helpers/jwt';
 
 let routes = [
     {
+        path: '/403',
+        name: '403',
+        component: require('./components/errors/Error-403')
+    },
+    {
         path: '/',
         name: 'index',
         component: require('./components/pages/Home')
