@@ -31,6 +31,31 @@ let routes = [
         meta: { requireAuth: true }
     },
     {
+        path: '/plan',
+        component: require('./components/pages/Plan'),
+        meta: { requireAuth: true },
+        children: [
+            {
+                path: '',
+                name: 'write_plan',
+                component: require('./components/pages/plans/WritePlan'),
+                meta: { requireAuth: true }
+            },
+            {
+                path: '/plans',
+                name: 'plans',
+                component: require('./components/pages/plans/Plans'),
+                meta: { requireAuth: true }
+            },
+            {
+                path: '/review_plans',
+                name: 'review_plans',
+                component: require('./components/pages/plans/ReviewPlans'),
+                meta: { requireAuth: true }
+            }
+        ]
+    },
+    {
         path: '/system',
         component: require('./components/pages/System'),
         meta: { requireAuth: true },

@@ -24,7 +24,7 @@
                 <FormItem label="验证码：" prop="captcha">
                     <Input style="width: 94%; border-right: 0;" v-model="formData.captcha"
                            placeholder="Enter veriyf code">
-                    <span slot="append">
+                        <span slot="append">
                             <img ref="captcha" src="../../../images/everan.gif" title="刷新验证码" alt="验证码"
                                  @click="codeInit" class="img-code">
                         </span>
@@ -32,7 +32,7 @@
                 </FormItem>
                 <div class="ivu-form-item-content" style="text-align: center;">
                     <Button type="primary" @click="handleSubmit('formData')" :loading="loading" style="margin-left: 8px">
-                        <Icon type="android-done"></Icon>
+                        <Icon type="navigate"></Icon>
                         登陆
                     </Button>
                     <Button type="ghost" @click="handleReset('formData')" style="margin-left: 8px">
