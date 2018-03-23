@@ -30,7 +30,7 @@
                         </Submenu>
                     </Menu>
                 </Sider>
-                <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
+                <Content :style="{padding: '24px', minHeight: '325px', background: '#fff'}">
                     <transition name="fade" mode="out-in">
                         <router-view></router-view>
                     </transition>

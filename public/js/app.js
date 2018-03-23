@@ -29018,8 +29018,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_iview___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_iview__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_iview_dist_styles_iview_css__ = __webpack_require__(112);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_iview_dist_styles_iview_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_iview_dist_styles_iview_css__);
-var _this = this;
-
 __webpack_require__(23);
 
 window.Vue = __webpack_require__(7);
@@ -29062,14 +29060,14 @@ axios.interceptors.response.use(function (response) {
     if (error.response.status == 403) {
         __WEBPACK_IMPORTED_MODULE_2__routes__["a" /* default */].push({ name: '403' });
     }
-    if (error.response.status == 401) {
+    if (error.response.status == 401 && error.response.data.message == 'Token has expired') {
         axios.get('/api/authorizations/curren').then(function (response) {
             __WEBPACK_IMPORTED_MODULE_4__helpers_jwt__["a" /* default */].setToken(response.data.meta.access_token);
             __WEBPACK_IMPORTED_MODULE_3__store_index__["a" /* default */].dispatch('setAuthUser', response.data);
         }).catch(function () {
             __WEBPACK_IMPORTED_MODULE_4__helpers_jwt__["a" /* default */].removeToken();
             __WEBPACK_IMPORTED_MODULE_3__store_index__["a" /* default */].dispatch('unsetAuthUser');
-            _this.$Message.warning({
+            __WEBPACK_IMPORTED_MODULE_7_iview___default.a.Message.warning({
                 content: '身份信息已过期，请重新登陆。',
                 duration: 2,
                 onClose: function onClose() {
@@ -53733,7 +53731,7 @@ var render = function() {
                 {
                   style: {
                     padding: "24px",
-                    minHeight: "280px",
+                    minHeight: "325px",
                     background: "#fff"
                   }
                 },
@@ -53859,30 +53857,80 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
             formValidate: {
-                name: '',
-                mail: '',
-                city: '',
-                gender: '',
-                interest: [],
-                date: '',
-                time: '',
-                desc: ''
+                lesson_name: '',
+                class_name: '',
+                exam_type: '1',
+                data: [{
+                    week: '',
+                    lessons: '',
+                    start_end_week: [1, 12]
+                }]
             },
+            weeks: [{
+                'id': 1,
+                'day': '周一'
+            }, {
+                'id': 2,
+                'day': '周二'
+            }, {
+                'id': 3,
+                'day': '周三'
+            }, {
+                'id': 4,
+                'day': '周四'
+            }, {
+                'id': 5,
+                'day': '周五'
+            }, {
+                'id': 6,
+                'day': '周六'
+            }, {
+                'id': 7,
+                'day': '周日'
+            }],
             ruleValidate: {
-                name: [{ required: true, message: 'The name cannot be empty', trigger: 'blur' }],
-                mail: [{ required: true, message: 'Mailbox cannot be empty', trigger: 'blur' }, { type: 'email', message: 'Incorrect email format', trigger: 'blur' }],
-                city: [{ required: true, message: 'Please select the city', trigger: 'change' }],
-                gender: [{ required: true, message: 'Please select gender', trigger: 'change' }],
-                interest: [{ required: true, type: 'array', min: 1, message: 'Choose at least one hobby', trigger: 'change' }, { type: 'array', max: 2, message: 'Choose two hobbies at best', trigger: 'change' }],
-                date: [{ required: true, type: 'date', message: 'Please select the date', trigger: 'change' }],
-                time: [{ required: true, type: 'string', message: 'Please select time', trigger: 'change' }],
-                desc: [{ required: true, message: 'Please enter a personal introduction', trigger: 'blur' }, { type: 'string', min: 20, message: 'Introduce no less than 20 words', trigger: 'blur' }]
+                lesson_name: [{ required: true, message: '请填写课程名称', trigger: 'blur' }],
+                class_name: [{ required: true, message: '请填写班级名称', trigger: 'blur' }]
             }
         };
     },
@@ -53901,6 +53949,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         handleReset: function handleReset(name) {
             this.$refs[name].resetFields();
+        },
+        addData: function addData() {
+            this.formValidate.data.push({
+                week: '',
+                lessons: '',
+                start_end_week: [1, 12]
+            });
+        },
+        del: function del(index) {
+            this.formValidate.data.splice(index, 1);
         }
     }
 });
@@ -53944,16 +54002,20 @@ var render = function() {
                         [
                           _c(
                             "FormItem",
-                            { attrs: { label: "课程名", prop: "name" } },
+                            { attrs: { label: "课程名", prop: "lesson_name" } },
                             [
                               _c("Input", {
-                                attrs: { placeholder: "Enter your name" },
+                                attrs: { placeholder: "课程名称" },
                                 model: {
-                                  value: _vm.formValidate.name,
+                                  value: _vm.formValidate.lesson_name,
                                   callback: function($$v) {
-                                    _vm.$set(_vm.formValidate, "name", $$v)
+                                    _vm.$set(
+                                      _vm.formValidate,
+                                      "lesson_name",
+                                      $$v
+                                    )
                                   },
-                                  expression: "formValidate.name"
+                                  expression: "formValidate.lesson_name"
                                 }
                               })
                             ],
@@ -53969,41 +54031,23 @@ var render = function() {
                         [
                           _c(
                             "FormItem",
-                            { attrs: { label: "授课班级", prop: "mail" } },
+                            {
+                              attrs: { label: "授课班级", prop: "class_name" }
+                            },
                             [
                               _c("Input", {
-                                attrs: { placeholder: "Enter your e-mail" },
+                                attrs: { placeholder: "班级名称" },
                                 model: {
-                                  value: _vm.formValidate.mail,
+                                  value: _vm.formValidate.class_name,
                                   callback: function($$v) {
-                                    _vm.$set(_vm.formValidate, "mail", $$v)
+                                    _vm.$set(
+                                      _vm.formValidate,
+                                      "class_name",
+                                      $$v
+                                    )
                                   },
-                                  expression: "formValidate.mail"
+                                  expression: "formValidate.class_name"
                                 }
-                              })
-                            ],
-                            1
-                          )
-                        ],
-                        1
-                      )
-                    ],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "Row",
-                    [
-                      _c(
-                        "Col",
-                        { attrs: { span: "12" } },
-                        [
-                          _c(
-                            "FormItem",
-                            { attrs: { label: "课程名：" } },
-                            [
-                              _c("Input", {
-                                attrs: { placeholder: "Enter your name" }
                               })
                             ],
                             1
@@ -54014,15 +54058,38 @@ var render = function() {
                       _vm._v(" "),
                       _c(
                         "Col",
-                        { attrs: { span: "12" } },
+                        { attrs: { span: "8" } },
                         [
                           _c(
                             "FormItem",
-                            { attrs: { label: "授课班级：" } },
+                            { attrs: { label: "类型" } },
                             [
-                              _c("Input", {
-                                attrs: { placeholder: "Enter your e-mail" }
-                              })
+                              _c(
+                                "RadioGroup",
+                                {
+                                  model: {
+                                    value: _vm.formValidate.exam_type,
+                                    callback: function($$v) {
+                                      _vm.$set(
+                                        _vm.formValidate,
+                                        "exam_type",
+                                        $$v
+                                      )
+                                    },
+                                    expression: "formValidate.exam_type"
+                                  }
+                                },
+                                [
+                                  _c("Radio", { attrs: { label: "1" } }, [
+                                    _vm._v("考查")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("Radio", { attrs: { label: "2" } }, [
+                                    _vm._v("考试")
+                                  ])
+                                ],
+                                1
+                              )
                             ],
                             1
                           )
@@ -54032,6 +54099,182 @@ var render = function() {
                     ],
                     1
                   ),
+                  _vm._v(" "),
+                  _vm._l(_vm.formValidate.data, function(item, index) {
+                    return _c(
+                      "Row",
+                      { key: index },
+                      [
+                        _c(
+                          "Col",
+                          { attrs: { span: "10" } },
+                          [
+                            index == 0
+                              ? _c(
+                                  "FormItem",
+                                  { attrs: { label: "起止周" } },
+                                  [
+                                    _c("Slider", {
+                                      attrs: { range: "", min: 1, max: 19 },
+                                      model: {
+                                        value: item.start_end_week,
+                                        callback: function($$v) {
+                                          _vm.$set(item, "start_end_week", $$v)
+                                        },
+                                        expression: "item.start_end_week"
+                                      }
+                                    })
+                                  ],
+                                  1
+                                )
+                              : _c(
+                                  "FormItem",
+                                  [
+                                    _c("Slider", {
+                                      attrs: { range: "", min: 1, max: 19 },
+                                      model: {
+                                        value: item.start_end_week,
+                                        callback: function($$v) {
+                                          _vm.$set(item, "start_end_week", $$v)
+                                        },
+                                        expression: "item.start_end_week"
+                                      }
+                                    })
+                                  ],
+                                  1
+                                )
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "Col",
+                          { attrs: { span: "6" } },
+                          [
+                            _c(
+                              "FormItem",
+                              { attrs: { label: "上课时间" } },
+                              [
+                                _c(
+                                  "Select",
+                                  {
+                                    attrs: { placeholder: "周几上课？" },
+                                    model: {
+                                      value: item.week,
+                                      callback: function($$v) {
+                                        _vm.$set(item, "week", $$v)
+                                      },
+                                      expression: "item.week"
+                                    }
+                                  },
+                                  _vm._l(_vm.weeks, function(w, i) {
+                                    return _c(
+                                      "Option",
+                                      { key: i, attrs: { value: w.id } },
+                                      [_vm._v(_vm._s(w.day))]
+                                    )
+                                  })
+                                )
+                              ],
+                              1
+                            )
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "Col",
+                          { attrs: { span: "6" } },
+                          [
+                            _c(
+                              "FormItem",
+                              {
+                                attrs: {
+                                  label: "节次",
+                                  prop: "data." + index + ".lessons",
+                                  rules: {
+                                    required: true,
+                                    message: "请填写课程节次",
+                                    trigger: "blur"
+                                  }
+                                }
+                              },
+                              [
+                                _c("Input", {
+                                  attrs: { placeholder: "如：1-2-3节" },
+                                  model: {
+                                    value: item.lessons,
+                                    callback: function($$v) {
+                                      _vm.$set(item, "lessons", $$v)
+                                    },
+                                    expression: "item.lessons"
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          ],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "Col",
+                          { attrs: { span: "2" } },
+                          [
+                            index == 0
+                              ? _c(
+                                  "FormItem",
+                                  [
+                                    _c(
+                                      "Button",
+                                      {
+                                        attrs: { type: "primary" },
+                                        on: { click: _vm.addData }
+                                      },
+                                      [
+                                        _c("Icon", { attrs: { type: "plus" } }),
+                                        _vm._v(
+                                          "\n                                增加数据\n                            "
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  ],
+                                  1
+                                )
+                              : _c(
+                                  "FormItem",
+                                  [
+                                    _c(
+                                      "Button",
+                                      {
+                                        attrs: { type: "error" },
+                                        on: {
+                                          click: function($event) {
+                                            _vm.del(index)
+                                          }
+                                        }
+                                      },
+                                      [
+                                        _c("Icon", {
+                                          attrs: { type: "close-round" }
+                                        }),
+                                        _vm._v(
+                                          "\n                                删除此行\n                            "
+                                        )
+                                      ],
+                                      1
+                                    )
+                                  ],
+                                  1
+                                )
+                          ],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  }),
                   _vm._v(" "),
                   _c(
                     "FormItem",
@@ -54046,7 +54289,7 @@ var render = function() {
                             }
                           }
                         },
-                        [_vm._v("Submit")]
+                        [_vm._v("生成授课计划")]
                       ),
                       _vm._v(" "),
                       _c(
@@ -54060,13 +54303,13 @@ var render = function() {
                             }
                           }
                         },
-                        [_vm._v("Reset")]
+                        [_vm._v("重置")]
                       )
                     ],
                     1
                   )
                 ],
-                1
+                2
               )
             ],
             1

@@ -40,14 +40,14 @@ axios.interceptors.response.use((response) => {
     if (error.response.status == 403) {
         router.push({name: '403'});
     }
-    if (error.response.status == 401) {
+    if (error.response.status == 401 && error.response.data.message == 'Token has expired') {
         axios.get('/api/authorizations/curren').then(response => {
             JWT.setToken(response.data.meta.access_token);
             store.dispatch('setAuthUser', response.data);
         }).catch(() => {
             JWT.removeToken();
             store.dispatch('unsetAuthUser');
-            this.$Message.warning({
+            iView.Message.warning({
                 content: '身份信息已过期，请重新登陆。',
                 duration: 2,
                 onClose: () => {
