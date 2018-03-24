@@ -1,7 +1,7 @@
 <template>
     <div>
-        <Row type="flex" justify="center">
-            <Col span="20">
+        <Row>
+            <Col span="24">
                 <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
                     <Row>
                         <Col span="8">
@@ -32,7 +32,7 @@
                                 <Slider v-model="item.start_end_week" range :min="1" :max="19"></Slider>
                             </FormItem>
                         </Col>
-                        <Col span="6">
+                        <Col span="4">
                             <FormItem label="上课时间">
                                 <Select v-model="item.week" placeholder="周几上课？">
                                     <Option v-for="(w, i) in weeks" :key="i" :value="w.id">{{ w.day }}</Option>
@@ -46,7 +46,7 @@
                                 <Input v-model="item.lessons" placeholder="如：1-2-3节"></Input>
                             </FormItem>
                         </Col>
-                        <Col span="2">
+                        <Col span="4">
                             <FormItem v-if="index == 0">
                                 <Button type="primary" @click="addData">
                                     <Icon type="plus"></Icon>

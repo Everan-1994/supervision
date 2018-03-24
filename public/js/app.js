@@ -53976,11 +53976,10 @@ var render = function() {
     [
       _c(
         "Row",
-        { attrs: { type: "flex", justify: "center" } },
         [
           _c(
             "Col",
-            { attrs: { span: "20" } },
+            { attrs: { span: "24" } },
             [
               _c(
                 "Form",
@@ -54149,7 +54148,7 @@ var render = function() {
                         _vm._v(" "),
                         _c(
                           "Col",
-                          { attrs: { span: "6" } },
+                          { attrs: { span: "4" } },
                           [
                             _c(
                               "FormItem",
@@ -54219,7 +54218,7 @@ var render = function() {
                         _vm._v(" "),
                         _c(
                           "Col",
-                          { attrs: { span: "2" } },
+                          { attrs: { span: "4" } },
                           [
                             index == 0
                               ? _c(
