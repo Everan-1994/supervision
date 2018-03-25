@@ -5,17 +5,17 @@
                 <Form ref="formValidate" :model="formValidate" :rules="ruleValidate" :label-width="80">
                     <Row>
                         <Col span="8">
-                            <FormItem label="课程名" prop="lesson_name">
+                            <FormItem label="课程名：" prop="lesson_name">
                                 <Input v-model="formValidate.lesson_name" placeholder="课程名称"></Input>
                             </FormItem>
                         </Col>
                         <Col span="8">
-                            <FormItem label="授课班级" prop="class_name">
+                            <FormItem label="授课班级：" prop="class_name">
                                 <Input v-model="formValidate.class_name" placeholder="班级名称"></Input>
                             </FormItem>
                         </Col>
                         <Col span="8">
-                            <FormItem label="类型">
+                            <FormItem label="类型：">
                                 <RadioGroup v-model="formValidate.exam_type">
                                     <Radio label="1">考查</Radio>
                                     <Radio label="2">考试</Radio>
@@ -25,7 +25,7 @@
                     </Row>
                     <Row v-for="(item, index) in formValidate.data" :key="index">
                         <Col span="10">
-                            <FormItem label="起止周" v-if="index == 0">
+                            <FormItem label="起止周：" v-if="index == 0">
                                 <Slider v-model="item.start_end_week" range :min="1" :max="19"></Slider>
                             </FormItem>
                             <FormItem v-else>
@@ -33,14 +33,14 @@
                             </FormItem>
                         </Col>
                         <Col span="4">
-                            <FormItem label="上课时间">
+                            <FormItem label="上课时间：">
                                 <Select v-model="item.week" placeholder="周几上课？">
                                     <Option v-for="(w, i) in weeks" :key="i" :value="w.id">{{ w.day }}</Option>
                                 </Select>
                             </FormItem>
                         </Col>
                         <Col span="6">
-                            <FormItem label="节次"
+                            <FormItem label="节次："
                                       :prop="'data.' + index + '.lessons'"
                                       :rules="{required: true, message: '请填写课程节次', trigger: 'blur'}">
                                 <Input v-model="item.lessons" placeholder="如：1-2-3节"></Input>
