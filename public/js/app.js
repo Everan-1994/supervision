@@ -53937,13 +53937,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
         handleSubmit: function handleSubmit(name) {
-            var _this = this;
+            var _this2 = this;
 
-            this.$refs[name].validate(function (valid) {
+            var _this = this;
+            _this.$refs[name].validate(function (valid) {
                 if (valid) {
-                    _this.$Message.success('Success!');
+                    console.log(_this.formValidate.data);
                 } else {
-                    _this.$Message.error('Fail!');
+                    _this2.$Message.error('Fail!');
                 }
             });
         },
@@ -54001,9 +54002,7 @@ var render = function() {
                         [
                           _c(
                             "FormItem",
-                            {
-                              attrs: { label: "课程名：", prop: "lesson_name" }
-                            },
+                            { attrs: { label: "课程名", prop: "lesson_name" } },
                             [
                               _c("Input", {
                                 attrs: { placeholder: "课程名称" },
@@ -54033,7 +54032,7 @@ var render = function() {
                           _c(
                             "FormItem",
                             {
-                              attrs: { label: "授课班级：", prop: "class_name" }
+                              attrs: { label: "授课班级", prop: "class_name" }
                             },
                             [
                               _c("Input", {
@@ -54063,7 +54062,7 @@ var render = function() {
                         [
                           _c(
                             "FormItem",
-                            { attrs: { label: "类型：" } },
+                            { attrs: { label: "类型" } },
                             [
                               _c(
                                 "RadioGroup",
@@ -54113,7 +54112,7 @@ var render = function() {
                             index == 0
                               ? _c(
                                   "FormItem",
-                                  { attrs: { label: "起止周：" } },
+                                  { attrs: { label: "起止周" } },
                                   [
                                     _c("Slider", {
                                       attrs: { range: "", min: 1, max: 19 },
@@ -54154,7 +54153,7 @@ var render = function() {
                           [
                             _c(
                               "FormItem",
-                              { attrs: { label: "上课时间：" } },
+                              { attrs: { label: "上课时间" } },
                               [
                                 _c(
                                   "Select",
@@ -54191,7 +54190,7 @@ var render = function() {
                               "FormItem",
                               {
                                 attrs: {
-                                  label: "节次：",
+                                  label: "节次",
                                   prop: "data." + index + ".lessons",
                                   rules: {
                                     required: true,
