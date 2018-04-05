@@ -46,7 +46,11 @@ class AuthorizationsController extends Controller
     public function update()
     {
         $token = \Auth::guard('api')->refresh();
-        return $this->respondWithToken($token);
+        return $this->response->array([
+            'access_token' => $token,
+            'token_type'   => 'Bearer',
+            'expires_in'   => \Auth::guard('api')->factory()->getTTL() * 60 * 2
+        ], 201);
     }
 
     public function destroy()
